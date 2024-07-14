@@ -1,0 +1,13 @@
+body {
+  background-color: #222;
+  overflow: hidden;
+}
+
+div {
+  position: absolute;
+  width: 8px;
+  height: 130px;
+  background-color: #fff;
+  top: var(--top);
+  left: 0px;
+}/*# sourceMappingURL=pong.css.map */

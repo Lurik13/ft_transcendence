@@ -1,10 +1,16 @@
 $black: #222222;
 $white: #FFFBFE;
-$purple: #9D8DF1;
-// $purple: #6E44FF;
+// $purple: #9D8DF1;
+$purple: #6E44FF;
 $blue: #54DEFD;
 $green: #40F99B;
 
+@mixin flex_center
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 * {
     padding: 0;
@@ -19,31 +25,36 @@ $green: #40F99B;
 body {
 	background-color: $black;
 	text-align: center;
-	margin: 0;
+    margin: 20px;
 }
 
 input
 {
-    background-color: $black;
-    border: $purple solid 1px;
-    border-radius: 10px;
-    padding: 10px;
-    font-size:medium;
-    &:focus
-    {
-        outline: none;
-    }
+    outline: none;
 }
 
 button
 {
-    background-color: $purple;
-    border-style: none;
-    padding: 8px 20px;
+    background-color: transparent;
+    border: #FFF solid 2px;
+    outline: none;
+    padding: 15px;
     border-radius: 10px;
+    color: $blue;
 }
 
-h1
+a
 {
-    font-size: 2rem;
+    text-decoration: none;
+    color: $purple;
+}
+
+input
+{
+    background-color: #fff;
+    outline: none;
+    border-radius: 10px;
+    border: none;
+    padding: 8px;
+    font-size: 1rem;
 }
