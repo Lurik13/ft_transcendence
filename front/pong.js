@@ -7,31 +7,27 @@ const   aspectRatio = 16 / 9; // Ratio 16:9
 
 class   Player
 {
-    constructor([x, y], [w, h])
+    constructor([x, w, h])
     {
         this.element = document.createElement("div");
-        this.speed = this.yToPx(10);
+        this.speed = this.yToPx(1);
         this.w = this.xToPx(w);
         this.h = this.yToPx(h);
         this.x = this.xToPx(x);
-        this.y = this.yToPx(y);
+        this.y = (canvas.height - this.h) / 2;
     }
 
     xToPx(px)
     {
-        const res = canvas.width * px / canvas.width;
-        const pos = res / 1000 * canvas.width;
-        return (pos);
+        return (canvas.width * px / 100);
     }
 
     yToPx(px)
     {
-        const res = canvas.height * px / canvas.height;
-        const pos = res / 1000 * canvas.height * aspectRatio;
-        return (pos);
+        return (canvas.height * aspectRatio * px / 100);
     }
 
-    drawPaddle()
+    draw()
     {
         ctx.beginPath();
         ctx.rect(this.x, this.y, this.w, this.h);
@@ -44,7 +40,7 @@ class   Player
     {
         if (keyDown["w"] && this.y > 0)
             this.y -= this.speed;
-        else if (keyDown["s"] && this.y < canvas.height - this.h)
+        if (keyDown["s"] && this.y < canvas.height - this.h)
             this.y += this.speed;
     }
 
@@ -52,7 +48,7 @@ class   Player
     {
         if (keyDown["ArrowUp"] && this.y > 0)
             this.y -= this.speed;
-        else if (keyDown["ArrowDown"] && this.y < canvas.height - this.h)
+        if (keyDown["ArrowDown"] && this.y < canvas.height - this.h)
             this.y += this.speed;
     }
 
@@ -62,14 +58,56 @@ class   Player
         this.y = this.y / oldCanvasHeight * canvas.height;
         this.w = this.w / oldCanvasWidth * canvas.width;
         this.h = this.h / oldCanvasHeight * canvas.height;
-        this.speed = this.yToPx(10);
+        this.speed = this.yToPx(1);
+    }
+}
+
+class   Ball
+{
+    constructor()
+    {
+        this.w = this.xToPx(2);
+        this.h = this.yToPx(2);
+        this.x = (canvas.width - this.w) / 2;
+        this.y = (canvas.height - this.h) / 2;
+        this.r = this.xToPx(1);
+        this.speed = this.xToPx(1);
+    }
+
+    xToPx(px)
+    {
+        return (canvas.width * px / 100);
+    }
+
+    yToPx(px)
+    {
+        return (canvas.height * aspectRatio * px / 100);
+    }
+
+    draw()
+    {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+        ctx.strokeStyle = "#FFF";
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+    resize()
+    {
+        this.x = this.x / oldCanvasWidth * canvas.width;
+        this.y = this.y / oldCanvasHeight * canvas.height;
+        this.w = this.w / oldCanvasWidth * canvas.width;
+        this.h = this.h / oldCanvasHeight * canvas.height;
+        this.r = this.xToPx(1);
+        this.speed = this.xToPx(1);
     }
 }
 
 function    refresh_canvas_size()
 {
-    const   windowWidth = window.innerWidth;
-    const   windowHeight = window.innerHeight;
+    const   windowWidth = window.innerWidth - 100;
+    const   windowHeight = window.innerHeight - 100;
 
     if (windowWidth / windowHeight > aspectRatio)
     {
@@ -85,8 +123,9 @@ function    refresh_canvas_size()
 
 refresh_canvas_size()
 
-var pl = new Player([10, 0], [10, 100]);
-var pr = new Player([1000 - 20, 0], [10, 100]);
+var pl = new Player([1, 1, 10]);
+var pr = new Player([98, 1, 10]);
+var ball = new Ball();
 
 function resizeCanvas()
 {
@@ -95,6 +134,7 @@ function resizeCanvas()
     // Convert current positions and sizes to proportional values
     pl.resize();
     pr.resize();
+    ball.resize();
 
     // Save the new canvas dimensions for the next resize
     oldCanvasWidth = canvas.width;
@@ -107,8 +147,9 @@ let oldCanvasHeight = canvas.height;
 function    draw()
 {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    pl.drawPaddle();
-    pr.drawPaddle();
+    pl.draw();
+    pr.draw();
+    ball.draw();
 }
 
 function    animate()
