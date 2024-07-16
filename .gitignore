@@ -1,1 +1,6 @@
+# Mac
 .DS_Store
+
+# Django
+__pycache__
+env
