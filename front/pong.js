@@ -3,7 +3,7 @@ const   fps = 120;
 const   deltaTime = 1000 / fps;
 const   canvas = document.getElementById("gameArea");
 const   ctx = canvas.getContext("2d");
-const   aspectRatio = 16 / 9; // Ratio 16:9
+const   aspectRatio = 16 / 9;
 
 class   Player
 {
@@ -130,13 +130,9 @@ var ball = new Ball();
 function resizeCanvas()
 {
     refresh_canvas_size()
-
-    // Convert current positions and sizes to proportional values
     pl.resize();
     pr.resize();
     ball.resize();
-
-    // Save the new canvas dimensions for the next resize
     oldCanvasWidth = canvas.width;
     oldCanvasHeight = canvas.height;
 }
