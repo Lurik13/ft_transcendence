@@ -1,27 +1,34 @@
+// Object to track keys presses.
 var     keyDown = {};
+// Frame rate and time interval between frames.
 const   fps = 120;
 const   deltaTime = 1000 / fps;
+// Reference to HTML canvas and 2D rendering context.
 const   canvas = document.getElementById("gameArea");
 const   ctx = canvas.getContext("2d");
+// Game aspect ratio (16:9).
 const   aspectRatio = 16 / 9;
 
 class   Player
 {
     constructor([x, w, h])
     {
-        this.element = document.createElement("div");
-        this.speed = this.yToPx(1);
+        // Position, size and speed
         this.w = this.xToPx(w);
         this.h = this.yToPx(h);
         this.x = this.xToPx(x);
         this.y = (canvas.height - this.h) / 2;
+        this.rspeed = 1;
+        this.speed = this.yToPx(this.rspeed);
     }
 
+    // Converts a percentage of the canvas width into pixels
     xToPx(px)
     {
         return (canvas.width * px / 100);
     }
 
+    // Converts a percentage of the canvas's height (adjusted by the aspect ratio) into pixels.
     yToPx(px)
     {
         return (canvas.height * aspectRatio * px / 100);
@@ -58,7 +65,7 @@ class   Player
         this.y = this.y / oldCanvasHeight * canvas.height;
         this.w = this.w / oldCanvasWidth * canvas.width;
         this.h = this.h / oldCanvasHeight * canvas.height;
-        this.speed = this.yToPx(1);
+        this.speed = this.yToPx(this.rspeed);
     }
 }
 
@@ -70,8 +77,18 @@ class   Ball
         this.h = this.yToPx(2);
         this.x = (canvas.width - this.w) / 2;
         this.y = (canvas.height - this.h) / 2;
-        this.r = this.xToPx(1);
-        this.speed = this.xToPx(1);
+        this.rr = 1;
+        this.r = this.xToPx(this.rr);
+        // this.rspeed = 1;
+        // this.speed = this.xToPx(this.rspeed);
+        this.velocity = {
+            x: 0,
+            y: 0
+        };
+        this.rvelocity = {
+            x: 0,
+            y: 0
+        }
     }
 
     xToPx(px)
@@ -99,8 +116,56 @@ class   Ball
         this.y = this.y / oldCanvasHeight * canvas.height;
         this.w = this.w / oldCanvasWidth * canvas.width;
         this.h = this.h / oldCanvasHeight * canvas.height;
-        this.r = this.xToPx(1);
-        this.speed = this.xToPx(1);
+        this.r = this.xToPx(this.rr);
+        // this.speed = this.xToPx(this.rspeed);
+        this.velocity.x = this.xToPx(this.rvelocity.x);
+        this.velocity.y = this.yToPx(this.rvelocity.y);
+    }
+
+    bounce([x1, x2], [y1, y2])
+    {
+        const   vx = Math.random() * (x2 - x1) + x1;
+        const   vy = Math.random() * (y2 - y1) + y1;
+
+        if (x1 != 0 && x2 != 0)
+        {
+            this.velocity.x = this.xToPx(vx);
+            this.rvelocity.x = vx;
+        }
+        if (y1 == 0 && y2 == 0)
+        {
+            this.velocity.y *= -1;
+            this.rvelocity.y *= -1;
+        }
+        else
+        {
+            this.velocity.y = this.yToPx(vy);
+            this.rvelocity.y = vy;
+        }
+    }
+
+    move()
+    {
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
+        if (this.x <= 0)
+            this.bounce([0.6, 0.8], [-0.8, 0.8]);
+        if (this.y <= 0)
+            this.bounce([0, 0], [0, 0]);
+        if (this.x >= canvas.width)
+            this.bounce([-0.6, -0.8], [-0.8, 0.8]);
+        if (this.y >= canvas.height)
+            this.bounce([0, 0], [0, 0]);
+    }
+
+    launch()
+    {
+        const   vx = Math.random() * (0.8 - -0.6) + -0.6;
+        const   vy = Math.random() * (0.8 - -0.6) + -0.6;
+        this.velocity.x = this.xToPx(vx);
+        this.velocity.y = this.yToPx(vy);
+        this.rvelocity.x = vx;
+        this.rvelocity.y = vy;
     }
 }
 
@@ -153,6 +218,7 @@ function    animate()
     draw();
     pl.movePaddleLeft();
     pr.movePaddleRight();
+    ball.move();
 
     setTimeout(() => {
         requestAnimationFrame(animate);
@@ -165,3 +231,4 @@ window.addEventListener('resize', resizeCanvas);
 
 resizeCanvas();
 animate();
+ball.launch();
