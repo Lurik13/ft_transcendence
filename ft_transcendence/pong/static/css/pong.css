@@ -3,14 +3,14 @@
     src: url("/static/aurebesh.otf");
 }
 
-html {
+/* html {
     font-family: "aurebesh";
     font-size: 100%;
     text-align: center;
     color:green;
-}
+} */
 
 #scenery {
-    border: 5px solid black;
+    border: 5px solid red;
     /* transform: translate(0%, 45%); */
 }
