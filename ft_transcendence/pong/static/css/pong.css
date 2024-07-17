@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'aurebesh';
+    src: url("/static/aurebesh.otf");
+}
+
+html {
+    font-family: "aurebesh";
+    font-size: 100%;
+    text-align: center;
+    color:green;
+}
+
+#scenery {
+    border: 5px solid black;
+    /* transform: translate(0%, 45%); */
+}
