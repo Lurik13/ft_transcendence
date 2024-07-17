@@ -25,12 +25,13 @@ const bar_height = 100;
 const bar_width = 20;
 const left_bar_x = 30;
 const right_bar_x = 760;
-const bar_movement = 7;
+const bar_speed = 7;
 
 let left_bar_current_y = 210;
 let right_bar_current_y = 210;
 
 const ball_radius = 13;
+const ball_speed = 7;
 
 let ball_x = 405;
 let ball_y = 260;
@@ -71,14 +72,14 @@ window.onkeydown=function(key)
 {
 	if (key.keyCode === 87)
 	{
-		left_bar_current_y -= bar_movement;
+		left_bar_current_y -= bar_speed;
 		if (left_bar_current_y < board_y_min)
 			left_bar_current_y = board_y_min;
 		draw_board(left_bar_current_y, right_bar_current_y);
 	}
 	if (key.keyCode === 83)
 	{
-		left_bar_current_y += bar_movement;
+		left_bar_current_y += bar_speed;
 		if (left_bar_current_y > board_y_max)
 			left_bar_current_y = board_y_max;
 		draw_board(left_bar_current_y, right_bar_current_y);
@@ -86,21 +87,23 @@ window.onkeydown=function(key)
 
 	if (key.keyCode === 73)
 	{
-		right_bar_current_y -= bar_movement;
+		right_bar_current_y -= bar_speed;
 		if (right_bar_current_y < board_y_min)
 			right_bar_current_y = board_y_min;
 		draw_board(left_bar_current_y, right_bar_current_y);
 	}
 	if (key.keyCode === 75)
 	{
-		right_bar_current_y += bar_movement;
+		right_bar_current_y += bar_speed;
 		if (right_bar_current_y > board_y_max)
 			right_bar_current_y = board_y_max;
 		draw_board(left_bar_current_y, right_bar_current_y);
 	}
 }
 
-while (true)
+function main()
 {
-	
+	setTimeout(main, 1000);
+	console.log("Delayed for 1 second.");
 }
+main();
