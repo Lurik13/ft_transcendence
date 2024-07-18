@@ -1,5 +1,5 @@
 // Object to track keys presses.
-var     keyDown = {};
+let     keyDown = {};
 // Frame rate and time interval between frames.
 const   fps = 120;
 const   deltaTime = 1000 / fps;
@@ -185,12 +185,6 @@ function    refresh_canvas_size()
     }
 }
 
-refresh_canvas_size()
-
-var pl = new Player([1, 1, 10]);
-var pr = new Player([98, 1, 10]);
-var ball = new Ball();
-
 function resizeCanvas()
 {
     refresh_canvas_size()
@@ -200,9 +194,6 @@ function resizeCanvas()
     oldCanvasWidth = canvas.width;
     oldCanvasHeight = canvas.height;
 }
-
-let oldCanvasWidth = canvas.width;
-let oldCanvasHeight = canvas.height;
 
 function    draw()
 {
@@ -223,6 +214,13 @@ function    animate()
         requestAnimationFrame(animate);
     }, deltaTime);
 }
+
+let pl = new Player([1, 1, 10]);
+let pr = new Player([98, 1, 10]);
+let ball = new Ball();
+
+let oldCanvasWidth = canvas.width;
+let oldCanvasHeight = canvas.height;
 
 document.addEventListener("keydown", (e) => keyDown[e.key] = true);
 document.addEventListener("keyup", (e) => keyDown[e.key] = false);
