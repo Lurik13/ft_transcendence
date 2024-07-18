@@ -65,7 +65,7 @@ class   Player
         this.y = this.y / oldCanvasHeight * canvas.height;
         this.w = this.w / oldCanvasWidth * canvas.width;
         this.h = this.h / oldCanvasHeight * canvas.height;
-        this.speed = this.yToPx(this.rspeed);
+        this.speed = this.speed / oldCanvasHeight * canvas.height;
     }
 }
 
@@ -73,22 +73,14 @@ class   Ball
 {
     constructor()
     {
-        this.w = this.xToPx(2);
-        this.h = this.yToPx(2);
-        this.x = (canvas.width - this.w) / 2;
-        this.y = (canvas.height - this.h) / 2;
-        this.rr = 1;
-        this.r = this.xToPx(this.rr);
-        // this.rspeed = 1;
-        // this.speed = this.xToPx(this.rspeed);
+        this.r = this.xToPx(1);
+        this.x = canvas.width / 2;
+        this.y = canvas.height / 2;
+        // this.speed = this.xToPx(1);
         this.velocity = {
             x: 0,
             y: 0
         };
-        this.rvelocity = {
-            x: 0,
-            y: 0
-        }
     }
 
     xToPx(px)
@@ -114,58 +106,65 @@ class   Ball
     {
         this.x = this.x / oldCanvasWidth * canvas.width;
         this.y = this.y / oldCanvasHeight * canvas.height;
-        this.w = this.w / oldCanvasWidth * canvas.width;
-        this.h = this.h / oldCanvasHeight * canvas.height;
-        this.r = this.xToPx(this.rr);
-        // this.speed = this.xToPx(this.rspeed);
-        this.velocity.x = this.xToPx(this.rvelocity.x);
-        this.velocity.y = this.yToPx(this.rvelocity.y);
+        this.r = this.r / oldCanvasHeight * canvas.height;
+        // this.speed = this.speed / oldCanvasHeight * canvas.height;
+        this.velocity.x = this.velocity.x / oldCanvasHeight * canvas.height;
+        this.velocity.y = this.velocity.y / oldCanvasHeight * canvas.height;
     }
 
+    // Change direction and speed of ball
     bounce([x1, x2], [y1, y2])
     {
         const   vx = Math.random() * (x2 - x1) + x1;
         const   vy = Math.random() * (y2 - y1) + y1;
 
         if (x1 != 0 && x2 != 0)
-        {
             this.velocity.x = this.xToPx(vx);
-            this.rvelocity.x = vx;
-        }
         if (y1 == 0 && y2 == 0)
-        {
             this.velocity.y *= -1;
-            this.rvelocity.y *= -1;
-        }
         else
-        {
             this.velocity.y = this.yToPx(vy);
-            this.rvelocity.y = vy;
-        }
     }
 
+    checkCollides()
+    {
+        // if ball is between left paddle on axe x
+        // if ball is between left paddle on axe y
+        if (this.x - this.r <= pl.x + pl.w && this.x - this.r >= pl.x
+            && this.y >= pl.y && this.y <= pl.y + pl.h)
+            this.bounce([0.6, 0.8], [-0.8, 0.8]);
+        if (this.y - this.r <= 0)
+            this.bounce([0, 0], [0, 0]);
+        // if ball is between left paddle on axe x
+        // if ball is between left paddle on axe y
+        if (this.x + this.r >= pr.x && this.x + this.r <= pr.x + pr.w
+            && this.y >= pr.y && this.y <= pr.y + pr.h)
+            this.bounce([-0.6, -0.8], [-0.8, 0.8]);
+        if (this.y + this.r >= canvas.height)
+            this.bounce([0, 0], [0, 0]);
+    }
+
+    // Check collide and play move the ball
     move()
     {
+        this.checkCollides();
         this.x += this.velocity.x;
         this.y += this.velocity.y;
-        if (this.x <= 0)
-            this.bounce([0.6, 0.8], [-0.8, 0.8]);
-        if (this.y <= 0)
-            this.bounce([0, 0], [0, 0]);
-        if (this.x >= canvas.width)
-            this.bounce([-0.6, -0.8], [-0.8, 0.8]);
-        if (this.y >= canvas.height)
-            this.bounce([0, 0], [0, 0]);
     }
 
+    // Launch the ball on start (set velocity)
     launch()
     {
-        const   vx = Math.random() * (0.8 - -0.6) + -0.6;
-        const   vy = Math.random() * (0.8 - -0.6) + -0.6;
+        const   s = Math.round(Math.random());
+        var     vx = 0;
+        var     vy = 0;
+        if (s)
+            vx = Math.random() * (-0.8 - -0.6) + -0.6;
+        else
+            vx = Math.random() * (0.8 - 0.6) + 0.6;
+        vy = Math.random() * (0.8 - -0.8) + -0.8;
         this.velocity.x = this.xToPx(vx);
         this.velocity.y = this.yToPx(vy);
-        this.rvelocity.x = vx;
-        this.rvelocity.y = vy;
     }
 }
 
