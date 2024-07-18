@@ -1,3 +1,7 @@
+///////////////////////////////////////////////////////////
+//////////////////////// Variables ////////////////////////
+///////////////////////////////////////////////////////////
+
 const board = document.getElementById("board");
 const ctx = board.getContext("2d");
 let keys = {};
@@ -8,24 +12,29 @@ const board_y_min = 15;
 const board_y_max = 505;
 
 const paddle_height = 100;
-const paddle_width = 20;
-const left_paddle_x = 30;
-const right_paddle_x = 760;
+// const paddle_width = 20;
+const paddle_width = 60;
+// const left_paddle_x = 30;
+const left_paddle_x = 100;
+// const right_paddle_x = 760;
+const right_paddle_x = 650;
 const paddle_speed = 10;
 
 let left_paddle_current_y = 210;
 let right_paddle_current_y = 210;
 
 const ball_radius = 13;
-const ball_speed = 10;
+let ball_speed = 1;
 
 let ball_x = 405;
 let ball_y = 260;
 let ball_direction = [-0.5, -0.2];
 
 
-///////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////
+///////////////////////// Drawing /////////////////////////
+///////////////////////////////////////////////////////////
 
 function draw_paddle(x, paddle_coords)
 {
@@ -56,11 +65,14 @@ function draw_board(left_paddle_coords, right_paddle_coords)
 	draw_ball(ball_x, ball_y);
 }
 
-function move_ball()
-{
-	let future_x = ball_x + ball_direction[0] * ball_speed;
-	let future_y = ball_y + ball_direction[1] * ball_speed;
 
+
+///////////////////////////////////////////////////////////
+/////////////////////// Collisions ////////////////////////
+///////////////////////////////////////////////////////////
+
+function wall_collisions(future_x, future_y)
+{
 	if (future_x < board_x_min + ball_radius)
 	{
 		future_x = board_x_min + ball_radius;
@@ -83,20 +95,81 @@ function move_ball()
 	}
 	ball_x = future_x;
 	ball_y = future_y;
+}
+
+function paddle_collisions(future_x, future_y)
+{
+	// horizontal
+	// console.log("future_x " + future_x + ", left_paddle_x " + left_paddle_x + ", future_y " + future_y + ", left_paddle_current_y " + left_paddle_current_y);
+	// console.log("left_paddle_x + paddle_width " + (left_paddle_x + paddle_width) + ", left_paddle_current_y + paddle_height " + (left_paddle_current_y + paddle_height));
+	if (future_x - ball_radius <= left_paddle_x + paddle_width && future_x + ball_radius >= left_paddle_x
+		&& future_y >= left_paddle_current_y && future_y <= left_paddle_current_y + paddle_height)
+		ball_direction[0] *= -1;
+	else if (future_x + ball_radius >= right_paddle_x && future_x - ball_radius <= right_paddle_x + paddle_width
+		&& future_y >= right_paddle_current_y && future_y <= right_paddle_current_y + paddle_height)
+		ball_direction[0] *= -1;
+
+	// sur le cote exterieur du terrain
+	// else if future_x
+
+	// sur le cote vers les murs
+	else if (future_x >= left_paddle_x && future_x <= left_paddle_x + paddle_width)
+	{
+		if (future_y + ball_radius >= left_paddle_current_y
+			&& future_y + ball_radius <= left_paddle_current_y + paddle_height / 2)
+			ball_direction[1] *= -1;
+		else if (future_y - ball_radius <= left_paddle_current_y + paddle_height
+			&& future_y - ball_radius >= left_paddle_current_y + paddle_height / 2)
+			ball_direction[1] *= -1;
+	}
+	else if (future_x >= right_paddle_x && future_x <= right_paddle_x + paddle_width)
+	{
+		if (future_y + ball_radius >= right_paddle_current_y
+			&& future_y + ball_radius <= right_paddle_current_y + paddle_height / 2)
+			ball_direction[1] *= -1;
+		else if (future_y - ball_radius <= right_paddle_current_y + paddle_height
+			&& future_y - ball_radius >= right_paddle_current_y + paddle_height / 2)
+			ball_direction[1] *= -1;
+	}
+
+	//diagonales
+	else if (future_x >= left_paddle_x && future_y >= left_paddle_current_y
+		&& future_x <= (left_paddle_x + paddle_width) && future_y <= (left_paddle_current_y + paddle_height))
+	{
+		console.log(ball_direction[0]);
+		// ball_direction[0] *= -1;
+		// ball_direction[1] *= -1;
+		ball_direction[0] = Math.abs(ball_direction[0]) * -1;
+	}
+
+	// future_x 109.5, left_paddle_x 100, future_y 38.800000000006236, left_paddle_current_y 15
+	// left_paddle_x + paddle_width 160, left_paddle_current_y + paddle_height 115
+}
+
+function move_ball()
+{
+	let future_x = ball_x + ball_direction[0] * ball_speed;
+	let future_y = ball_y + ball_direction[1] * ball_speed;
+	wall_collisions(future_x, future_y);
+	paddle_collisions(future_x, future_y);
 	draw_board(left_paddle_current_y, right_paddle_current_y);
 	setTimeout(move_ball, 10);
 }
 
 
-///////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////
+////////////////////// Initial moves //////////////////////
+///////////////////////////////////////////////////////////
 
 draw_board(left_paddle_current_y, right_paddle_current_y);
 move_ball();
 
 
-///////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////
+///////////////////////// Events //////////////////////////
+///////////////////////////////////////////////////////////
 
 window.addEventListener('keydown', (e) =>
 {
@@ -112,7 +185,7 @@ window.addEventListener('keyup', (e) => {keys[e.key] = false});
 
 let last_time = 0;
 
-function handleKeyPress(event)
+function handleKeyPress()
 {
 	if (Date.now() > last_time + 1)
 	{
@@ -148,13 +221,4 @@ function handleKeyPress(event)
 		}
 	}
 	requestAnimationFrame(handleKeyPress);
-					
-    
 }
-// handleKeyPress();
-
-// function main()
-// {
-// 	setTimeout(main, 1000);
-// 	console.log("Delayed for 1 second.");
-// }
