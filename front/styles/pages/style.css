@@ -16,7 +16,7 @@ input {
   outline: none;
 }
 
-.button {
+button, .button {
   background-color: transparent;
   border: #FFF solid 2px;
   outline: none;

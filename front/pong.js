@@ -170,8 +170,8 @@ class   Ball
 
 function    refresh_canvas_size()
 {
-    const   windowWidth = window.innerWidth - 100;
-    const   windowHeight = window.innerHeight - 100;
+    const   windowWidth = window.innerWidth;
+    const   windowHeight = window.innerHeight;
 
     if (windowWidth / windowHeight > aspectRatio)
     {
