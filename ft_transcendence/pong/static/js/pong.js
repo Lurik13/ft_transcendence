@@ -1,5 +1,6 @@
 const board = document.getElementById("board");
 const ctx = board.getContext("2d");
+let keys = {};
 
 const board_x_min = 15;
 const board_x_max = 775;
@@ -10,13 +11,13 @@ const paddle_height = 100;
 const paddle_width = 20;
 const left_paddle_x = 30;
 const right_paddle_x = 760;
-const paddle_speed = 7;
+const paddle_speed = 10;
 
 let left_paddle_current_y = 210;
 let right_paddle_current_y = 210;
 
 const ball_radius = 13;
-const ball_speed = 13;
+const ball_speed = 10;
 
 let ball_x = 405;
 let ball_y = 260;
@@ -70,10 +71,9 @@ function move_ball()
 		future_y = board_y_min + ball_radius;
 		ball_direction[1] *= -1;
 	}
-
-	if (future_x > board_x_max + ball_radius)
+	if (future_x > board_x_max + ball_radius - 7)
 	{
-		future_x = board_x_max + ball_radius;
+		future_x = board_x_max + ball_radius - 7;
 		ball_direction[0] *= -1;
 	}
 	if (future_y > board_y_max - ball_radius)
@@ -81,17 +81,10 @@ function move_ball()
 		future_y = board_y_max - ball_radius;
 		ball_direction[1] *= -1;
 	}
-
-
 	ball_x = future_x;
 	ball_y = future_y;
 	draw_board(left_paddle_current_y, right_paddle_current_y);
-}
-
-function main()
-{
-	move_ball();
-	setTimeout(main, 10);
+	setTimeout(move_ball, 10);
 }
 
 
@@ -99,44 +92,66 @@ function main()
 
 
 draw_board(left_paddle_current_y, right_paddle_current_y);
-main();
+move_ball();
 
 
 ///////////////////////////////////////////////////////////
 
 
-window.onkeydown=function(key)
+window.addEventListener('keydown', (e) =>
 {
-	if (key.keyCode === 87)
+	if (e.key == 'w' || e.key == 's' || e.key == 'i' || e.key == 'k'
+		|| e.key == 'W' || e.key == 'S' || e.key == 'I' || e.key == 'K')
 	{
-		left_paddle_current_y -= paddle_speed;
-		if (left_paddle_current_y < board_y_min)
-			left_paddle_current_y = board_y_min;
-		draw_board(left_paddle_current_y, right_paddle_current_y);
+		keys[e.key] = true;
+		handleKeyPress();
 	}
-	if (key.keyCode === 83)
-	{
-		left_paddle_current_y += paddle_speed;
-		if (left_paddle_current_y > board_y_max - paddle_height)
-			left_paddle_current_y = board_y_max - paddle_height;
-		draw_board(left_paddle_current_y, right_paddle_current_y);
-	}
+});
 
-	if (key.keyCode === 73)
+window.addEventListener('keyup', (e) => {keys[e.key] = false});
+
+let last_time = 0;
+
+function handleKeyPress(event)
+{
+	if (Date.now() > last_time + 1)
 	{
-		right_paddle_current_y -= paddle_speed;
-		if (right_paddle_current_y < board_y_min)
-			right_paddle_current_y = board_y_min;
-		draw_board(left_paddle_current_y, right_paddle_current_y);
+		last_time = Date.now();
+		if (keys['w'] == true || keys['W'] == true)
+		{
+			left_paddle_current_y -= paddle_speed;
+			if (left_paddle_current_y < board_y_min)
+				left_paddle_current_y = board_y_min;
+			draw_board(left_paddle_current_y, right_paddle_current_y);
+		}
+		if (keys['s'] == true  || keys['S'] == true )
+		{
+			left_paddle_current_y += paddle_speed;
+			if (left_paddle_current_y > board_y_max - paddle_height)
+				left_paddle_current_y = board_y_max - paddle_height;
+			draw_board(left_paddle_current_y, right_paddle_current_y);
+		}
+		
+		if (keys['i'] == true  || keys['I'] == true )
+		{
+			right_paddle_current_y -= paddle_speed;
+			if (right_paddle_current_y < board_y_min)
+				right_paddle_current_y = board_y_min;
+			draw_board(left_paddle_current_y, right_paddle_current_y);
+		}
+		if (keys['k'] == true  || keys['K'] == true )
+		{
+			right_paddle_current_y += paddle_speed;
+			if (right_paddle_current_y > board_y_max - paddle_height)
+				right_paddle_current_y = board_y_max - paddle_height;
+			draw_board(left_paddle_current_y, right_paddle_current_y);
+		}
 	}
-	if (key.keyCode === 75)
-	{
-		right_paddle_current_y += paddle_speed;
-		if (right_paddle_current_y > board_y_max - paddle_height)
-			right_paddle_current_y = board_y_max - paddle_height;
-		draw_board(left_paddle_current_y, right_paddle_current_y);
-	}
+	requestAnimationFrame(handleKeyPress);
+					
+    
 }
+// handleKeyPress();
 
 // function main()
 // {
