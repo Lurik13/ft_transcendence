@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Username</title>
+</head>
+<body>
+    <h1>Submit Another User's Username</h1>
+    <p> {{ user.username }} {{ user.id }} </p>
+    <form method="post">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

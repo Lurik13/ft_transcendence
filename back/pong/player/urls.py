@@ -1,0 +1,11 @@
+from django.urls import path, include
+from . import views
+
+app_name = "player"
+
+urlpatterns = [
+    path('register/', views.register_view, name="register"),
+    path('success/', views.success_view, name='success'),
+    path('login/', views.login_view, name="login"),
+    path('otp/', views.otp_view, name="otp_view"),
+]

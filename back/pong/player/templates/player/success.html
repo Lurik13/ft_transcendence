@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Success
+{% endblock %}
+
+{% block content %}
+    <h2>Registration successful!</h2>
+    <p>Thank you for registering.</p>
+    <p>username = {{ user.username }}</p>
+    <p>email = {{ user.email }}</p>
+    <p>password = {{ user.password }}</p>
+    
+    <p>phone = {{ user_profile.phone_number }}</p>
+    <p>phone = {{ phone_number }}</p>
+
+{% endblock %}

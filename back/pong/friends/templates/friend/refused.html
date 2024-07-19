@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pending list</title>
+</head>
+<body>
+    {% for elem in friends %}
+
+        <p>{{elem.user.username}}
+        | 
+        <a href= "{% url 'friend:accept' elem.id %}">accept</a>
+    {% endfor %}
+</body>
+</html>

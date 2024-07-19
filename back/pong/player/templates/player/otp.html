@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    OTP
+{% endblock %}
+
+{% block content %}
+    <h1>OTP</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label for="otp">OTP:</label>
+            <input class="form" type="text" name="otp" required>
+        </div>
+        <button type="submit">Confirm</button>
+    </form>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    </form>
+{% endblock %}
