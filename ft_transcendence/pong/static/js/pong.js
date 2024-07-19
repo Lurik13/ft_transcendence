@@ -13,18 +13,18 @@ const board_y_max = 505;
 
 const paddle_height = 100;
 // const paddle_width = 20;
-const paddle_width = 60;
+const paddle_width = 7;
 // const left_paddle_x = 30;
 const left_paddle_x = 100;
 // const right_paddle_x = 760;
-const right_paddle_x = 650;
+const right_paddle_x = 600;
 const paddle_speed = 10;
 
 let left_paddle_current_y = 210;
 let right_paddle_current_y = 210;
 
 const ball_radius = 13;
-let ball_speed = 1;
+let ball_speed = 7;
 
 let ball_x = 405;
 let ball_y = 260;
@@ -95,52 +95,71 @@ function wall_collisions(future_x, future_y)
 	}
 	ball_x = future_x;
 	ball_y = future_y;
+
 }
 
 function paddle_collisions(future_x, future_y)
 {
 	// horizontal
-	// console.log("future_x " + future_x + ", left_paddle_x " + left_paddle_x + ", future_y " + future_y + ", left_paddle_current_y " + left_paddle_current_y);
-	// console.log("left_paddle_x + paddle_width " + (left_paddle_x + paddle_width) + ", left_paddle_current_y + paddle_height " + (left_paddle_current_y + paddle_height));
-	if (future_x - ball_radius <= left_paddle_x + paddle_width && future_x + ball_radius >= left_paddle_x
+	if ((future_x - ball_radius <= left_paddle_x + paddle_width && future_x - ball_radius >= left_paddle_x + paddle_width - ball_radius)
 		&& future_y >= left_paddle_current_y && future_y <= left_paddle_current_y + paddle_height)
-		ball_direction[0] *= -1;
-	else if (future_x + ball_radius >= right_paddle_x && future_x - ball_radius <= right_paddle_x + paddle_width
-		&& future_y >= right_paddle_current_y && future_y <= right_paddle_current_y + paddle_height)
-		ball_direction[0] *= -1;
+		{
+			ball_direction[0] *= -1;
+			console.log(future_x);
+			ball_speed += 0.1;
+		}
+	// horizontal
+	if (future_x <= left_paddle_x + paddle_width + 9 * ball_radius / 10 && future_x >= left_paddle_x + paddle_width - ball_radius
+		&& future_y >= left_paddle_current_y && future_y <= left_paddle_current_y + paddle_height)
+		{
+			ball_direction[0] = Math.abs(ball_direction[0]);
+			// ball_x = left_paddle_x + paddle_width + ball_radius;
+			ball_x += ball_radius / 10;
+			console.log(future_x);
+			ball_speed += 0.1;
+		}
 
+	else if (((future_x + ball_radius >= right_paddle_x && future_x <= right_paddle_x + ball_radius)
+		|| (future_x - ball_radius <= right_paddle_x + paddle_width && future_x + ball_radius >= right_paddle_x + paddle_width))
+		&& future_y >= right_paddle_current_y && future_y <= right_paddle_current_y + paddle_height)
+		{
+			ball_direction[0] *= -1;
+			console.log(future_x);
+			ball_speed += 0.1;
+		}
+		console.log(ball_speed);
 	// sur le cote exterieur du terrain
 	// else if future_x
 
 	// sur le cote vers les murs
-	else if (future_x >= left_paddle_x && future_x <= left_paddle_x + paddle_width)
-	{
-		if (future_y + ball_radius >= left_paddle_current_y
-			&& future_y + ball_radius <= left_paddle_current_y + paddle_height / 2)
-			ball_direction[1] *= -1;
-		else if (future_y - ball_radius <= left_paddle_current_y + paddle_height
-			&& future_y - ball_radius >= left_paddle_current_y + paddle_height / 2)
-			ball_direction[1] *= -1;
-	}
-	else if (future_x >= right_paddle_x && future_x <= right_paddle_x + paddle_width)
-	{
-		if (future_y + ball_radius >= right_paddle_current_y
-			&& future_y + ball_radius <= right_paddle_current_y + paddle_height / 2)
-			ball_direction[1] *= -1;
-		else if (future_y - ball_radius <= right_paddle_current_y + paddle_height
-			&& future_y - ball_radius >= right_paddle_current_y + paddle_height / 2)
-			ball_direction[1] *= -1;
-	}
+	// if (future_x >= left_paddle_x && future_x <= left_paddle_x + paddle_width)
+	// {
+	// 	if (future_y + ball_radius >= left_paddle_current_y
+	// 		&& future_y + ball_radius <= left_paddle_current_y + paddle_height / 2)
+	// 		ball_direction[1] *= -1;
+	// 	else if (future_y - ball_radius <= left_paddle_current_y + paddle_height
+	// 		&& future_y - ball_radius >= left_paddle_current_y + paddle_height / 2)
+	// 		ball_direction[1] *= -1;
+	// }
+	// else if (future_x >= right_paddle_x && future_x <= right_paddle_x + paddle_width)
+	// {
+	// 	if (future_y + ball_radius >= right_paddle_current_y
+	// 		&& future_y + ball_radius <= right_paddle_current_y + paddle_height / 2)
+	// 		ball_direction[1] *= -1;
+	// 	else if (future_y - ball_radius <= right_paddle_current_y + paddle_height
+	// 		&& future_y - ball_radius >= right_paddle_current_y + paddle_height / 2)
+	// 		ball_direction[1] *= -1;
+	// }
 
 	//diagonales
-	else if (future_x >= left_paddle_x && future_y >= left_paddle_current_y
-		&& future_x <= (left_paddle_x + paddle_width) && future_y <= (left_paddle_current_y + paddle_height))
-	{
-		console.log(ball_direction[0]);
-		// ball_direction[0] *= -1;
-		// ball_direction[1] *= -1;
-		ball_direction[0] = Math.abs(ball_direction[0]) * -1;
-	}
+	// else if (future_x >= left_paddle_x && future_y >= left_paddle_current_y
+	// 	&& future_x <= (left_paddle_x + paddle_width) && future_y <= (left_paddle_current_y + paddle_height))
+	// {
+	// 	console.log(ball_direction[0]);
+	// 	// ball_direction[0] *= -1;
+	// 	// ball_direction[1] *= -1;
+	// 	ball_direction[0] = Math.abs(ball_direction[0]) * -1;
+	// }
 
 	// future_x 109.5, left_paddle_x 100, future_y 38.800000000006236, left_paddle_current_y 15
 	// left_paddle_x + paddle_width 160, left_paddle_current_y + paddle_height 115
@@ -154,6 +173,73 @@ function move_ball()
 	paddle_collisions(future_x, future_y);
 	draw_board(left_paddle_current_y, right_paddle_current_y);
 	setTimeout(move_ball, 10);
+}
+
+function is_ball_in_paddle(paddle_x, paddle_y)
+{
+	// if (ball_x - ball_radius <= left_paddle_x + paddle_width && ball_x + ball_radius >= left_paddle_x
+	// 	&& ball_y >= left_paddle_current_y && ball_y <= left_paddle_current_y + paddle_height)
+	// {
+	// 	ball_direction[1] *= -1;
+	// 	ball_y += ball_speed;
+	// }
+	// else if (ball_x + ball_radius >= right_paddle_x && ball_x - ball_radius <= right_paddle_x + paddle_width
+	// 	&& ball_y >= right_paddle_current_y && ball_y <= right_paddle_current_y + paddle_height)
+	// {
+	// 	ball_direction[1] *= -1;
+	// 	ball_y += ball_speed;
+	// }
+
+	// if (ball_x >= left_paddle_x && ball_x <= left_paddle_x + paddle_width)
+	// {
+	// 	if (ball_y + ball_radius >= left_paddle_current_y
+	// 		&& ball_y + ball_radius <= left_paddle_current_y + paddle_height / 2)
+	// 	{
+	// 		ball_direction[0] = Math.abs(ball_direction[0]) * -1;
+	// 		ball_direction[1] = Math.abs(ball_direction[1]) * -1;
+	// 		ball_x += ball_radius;
+	// 		ball_y -= paddle_speed;
+	// 	}
+
+	// 	else if (ball_y - ball_radius <= left_paddle_current_y + paddle_height
+	// 		&& ball_y - ball_radius >= left_paddle_current_y + paddle_height / 2)
+	// 	{
+	// 		ball_direction[0] = Math.abs(ball_direction[0]) * -1;
+	// 		ball_direction[1] = Math.abs(ball_direction[1]) * -1;
+	// 		ball_y -= paddle_speed;
+	// 	}
+	// }
+	// else if (ball_x >= right_paddle_x && ball_x <= right_paddle_x + paddle_width)
+	// {
+	// 	if (ball_y + ball_radius >= right_paddle_current_y
+	// 		&& ball_y + ball_radius <= right_paddle_current_y + paddle_height / 2)
+	// 	{
+	// 		ball_direction[0] = Math.abs(ball_direction[0]) * -1;
+	// 		ball_direction[1] = Math.abs(ball_direction[1]) * -1;
+	// 		ball_y -= paddle_speed;
+	// 	}
+	// 	else if (ball_y - ball_radius <= right_paddle_current_y + paddle_height
+	// 		&& ball_y - ball_radius >= right_paddle_current_y + paddle_height / 2)
+	// 	{
+	// 		ball_direction[0] = Math.abs(ball_direction[0]) * -1;
+	// 		ball_direction[1] = Math.abs(ball_direction[1]) * -1;
+	// 		ball_y -= paddle_speed;
+	// 	}
+	// }
+
+	// if (paddle_x == left_paddle_x)
+	// {
+	// 	if ((ball_x + ball_radius >= paddle_x && ball_x + ball_radius <= paddle_x + paddle_width)
+	// 		|| (ball_x - ball_radius >= paddle_x && ball_x - ball_radius <= paddle_x + paddle_width))
+	// 	{
+	// 		ball_y = paddle_y + ball_radius + 1;
+	// 		ball_direction[0] *= -1;
+	// 		draw_board(left_paddle_current_y, right_paddle_current_y);
+	// 		// console.log("I'm inside the paddle");
+	// 		// if (ball_y + ball_radius >= paddle_y && ball_y + ball_radius <= paddle_y + paddle_height / 2)
+	// 		// 	console.log("haut");
+	// 	}
+	// }
 }
 
 
@@ -195,6 +281,8 @@ function handleKeyPress()
 			left_paddle_current_y -= paddle_speed;
 			if (left_paddle_current_y < board_y_min)
 				left_paddle_current_y = board_y_min;
+			// else if (left_paddle_current_y)
+			is_ball_in_paddle(left_paddle_x, left_paddle_current_y);
 			draw_board(left_paddle_current_y, right_paddle_current_y);
 		}
 		if (keys['s'] == true  || keys['S'] == true )
