@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .utils import send_otp
 from datetime import datetime
@@ -20,17 +19,14 @@ def register_view(request):
             return redirect(f'/player/success/?username={user.username}')
     else:
         form = RegisterForm()
-    return render(request, 'users/register.html', {'form': form})
-
+    return render(request, 'player/register.html', {'form': form})
 
 def success_view(request):
     username = request.GET.get('username')
-    user = User.objects.get(username=username)
-    user_profile = Player.objects.get(user=user)
+    user = get_object_or_404(Player, username=username)
     context = {
         'user': user,
-        'user_profile': user_profile,
-        'phone_number': user_profile.phone_number,
+        'phone_number': user.phone_number,
     }
     return render(request, 'player/success.html', context)
 
@@ -39,14 +35,13 @@ def login_view(request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, form.get_user())
+            login(request, user)
             send_otp(request)
             request.session['username'] = user.username
             return redirect('/player/otp/')
     else:
         form = AuthenticationForm()
-    return render(request, 'player/login.html', { "form":form })
-
+    return render(request, 'player/login.html', {"form": form})
 
 def otp_view(request):
     if request.method == "POST":
@@ -61,7 +56,7 @@ def otp_view(request):
                 totp = pyotp.TOTP(otp_secret_key, interval=60)
                 if totp.verify(user_otp):
                     username = request.session.get('username')
-                    user = get_object_or_404(User, username=username)
+                    user = get_object_or_404(Player, username=username)
                     login(request, user)
 
                     # Clear session data
