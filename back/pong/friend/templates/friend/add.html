@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Submit Username</title>
-</head>
+{% extends 'layout.html' %}
+
+{% block title %}
+    Submit Username
+{% endblock %}
+
+{% block content %}
+<br>
+
 <body>
     <h1>Submit Another User's Username</h1>
+    <br>
+
     <p> {{ user.username }} {{ user.id }} </p>
     <form method="post">
         {% csrf_token %}
@@ -13,4 +19,4 @@
         <button type="submit">Submit</button>
     </form>
 </body>
-</html>
+{% endblock %}

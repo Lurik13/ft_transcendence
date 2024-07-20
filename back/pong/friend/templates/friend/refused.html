@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Pending list</title>
-</head>
-<body>
+{% extends 'layout.html' %}
+
+{% block title %}
+    PENDING LIST
+{% endblock %}
+
+{% block content %}
     {% for elem in friends %}
 
         <p>{{elem.user.username}}
         | 
         <a href= "{% url 'friend:accept' elem.id %}">accept</a>
     {% endfor %}
-</body>
-</html>
+{% endblock %}
