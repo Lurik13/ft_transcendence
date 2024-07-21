@@ -12,8 +12,8 @@ const board_y_min = 15;
 const board_y_max = 505;
 
 const paddle_height = 100;
-// const paddle_width = 20;
-const paddle_width = 7;
+// const paddle_width = 5;
+const paddle_width = 100;
 // const left_paddle_x = 30;
 const left_paddle_x = 100;
 // const right_paddle_x = 760;
@@ -28,7 +28,7 @@ let ball_speed = 3;
 
 let ball_x = 405;
 let ball_y = 260;
-let ball_direction = [-0.5, -0.2];
+let ball_direction = [-0.5, 0.2];
 
 
 
@@ -60,9 +60,9 @@ function draw_board(left_paddle_coords, right_paddle_coords)
 	ctx.fillRect(10, 10, 800, 500);
 	ctx.clearRect(board_x_min, board_y_min, 780, 490);
 	
+	draw_ball(ball_x, ball_y);
 	draw_paddle(left_paddle_x, left_paddle_coords);
 	draw_paddle(right_paddle_x, right_paddle_coords);
-	draw_ball(ball_x, ball_y);
 }
 
 
@@ -104,8 +104,23 @@ function paddle_collisions(future_x, future_y)
 		&& future_y >= left_paddle_current_y - ball_radius && future_y <= left_paddle_current_y + paddle_height + ball_radius)
 	{
 		ball_direction[0] = Math.abs(ball_direction[0]);
+		if (future_y >= left_paddle_current_y - ball_radius && future_y <= left_paddle_current_y)
+		{
+			ball_direction[0] = 0.1;
+			ball_direction[1] = -1;
+		}
+		else if (future_y >= left_paddle_current_y && future_y <= left_paddle_current_y + ball_radius)
+		{
+			ball_direction[0] = 0.3;
+			ball_direction[1] = -1;
+		}
+		else if (future_y >= 2 * left_paddle_current_y / 5 && future_y <= 3 * left_paddle_current_y / 5)
+		{
+			ball_direction[0] *= -1;
+			ball_direction[1] = 0;
+		}
 		ball_x += ball_radius / 10;
-		ball_speed += 0.1;
+		// ball_speed += 0.1;
 	}
 
 	if (future_x >= right_paddle_x - ball_radius && future_x <= right_paddle_x
@@ -113,7 +128,7 @@ function paddle_collisions(future_x, future_y)
 	{
 		ball_direction[0] = Math.abs(ball_direction[0]) * -1;
 		ball_x -= ball_radius / 10;
-		ball_speed += 0.1;
+		// ball_speed += 0.1;
 	}
 }
 
