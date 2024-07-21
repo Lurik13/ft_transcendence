@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Scan QR Code
+{% endblock %}
+
+{% block content %}
+    <br>
+    <h1>Scan the QR Code with your Authenticator App</h1>
+    <img src="data:image/png;base64,{{ qr_data }}" alt="QR Code">
+    <form method="post" >
+        {% csrf_token %}
+        <label for="otp">Enter OTP from Authenticator App:</label>
+        <input type="text" name="otp" id="otp" required>
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}

@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required
 from .utils import send_otp
 from datetime import datetime
 from .forms import RegisterForm
@@ -36,9 +35,19 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            send_otp(request)
-            request.session['username'] = user.username
-            return redirect('/player/otp/')
+            
+            # Check the user's preferred OTP method
+            otp_method = request.POST.get('otp_method')
+            use_qr = otp_method == 'qr'
+            
+            if use_qr:
+                qr_data = send_otp(request, use_qr=True)
+                request.session['username'] = user.username
+                return render(request, 'player/display_qr.html', {'qr_data': qr_data})
+            else:
+                send_otp(request)
+                request.session['username'] = user.username
+                return redirect('/player/otp/')
     else:
         form = AuthenticationForm()
     return render(request, 'player/login.html', {"form": form})
@@ -64,10 +73,13 @@ def otp_view(request):
                     del request.session['otp_valid_date']
                     del request.session['username']
 
-                    return redirect('/about/')
+                    return redirect('/player/success')
             else:
                 return render(request, 'player/otp.html', {'error': 'OTP has expired'})
 
         return render(request, 'player/otp.html', {'error': 'Invalid OTP'})
 
     return render(request, 'player/otp.html')
+
+def display_qr_view(request):
+    return render(request, 'player/display_qr.html')
