@@ -12,23 +12,20 @@ const board_y_min = 15;
 const board_y_max = 505;
 
 const paddle_height = 100;
-// const paddle_width = 5;
-const paddle_width = 100;
-// const left_paddle_x = 30;
-const left_paddle_x = 100;
-// const right_paddle_x = 760;
-const right_paddle_x = 600;
+const paddle_width = 5;
+const left_paddle_x = 30;
+const right_paddle_x = 775;
 const paddle_speed = 10;
 
 let left_paddle_current_y = 210;
 let right_paddle_current_y = 210;
 
 const ball_radius = 13;
-let ball_speed = 3;
+let ball_speed = 5;
 
 let ball_x = 405;
 let ball_y = 260;
-let ball_angle = -45;
+let ball_angle = 0;
 
 
 
@@ -103,32 +100,19 @@ function paddle_collisions(future_x, future_y)
 	if (future_x <= left_paddle_x + paddle_width + ball_radius && future_x >= left_paddle_x + paddle_width
 		&& future_y >= left_paddle_current_y - ball_radius && future_y <= left_paddle_current_y + paddle_height + ball_radius)
 	{
-		ball_angle = 180 - ball_angle;
-		// if (future_y >= left_paddle_current_y - ball_radius && future_y <= left_paddle_current_y)
-		// {
-		// 	ball_direction[0] = 0.1;
-		// 	ball_direction[1] = -1;
-		// }
-		// else if (future_y >= left_paddle_current_y && future_y <= left_paddle_current_y + ball_radius)
-		// {
-		// 	ball_direction[0] = 0.3;
-		// 	ball_direction[1] = -1;
-		// }
-		// else if (future_y >= 2 * left_paddle_current_y / 5 && future_y <= 3 * left_paddle_current_y / 5)
-		// {
-		// 	ball_direction[0] *= -1;
-		// 	ball_direction[1] = 0;
-		// }
+		let position_in_paddle = (2 * (ball_y + ball_radius - left_paddle_current_y) / (paddle_height + ball_radius * 2)) - 1;
+		ball_angle = 80 * position_in_paddle;
 		ball_x += ball_radius / 10;
-		// ball_speed += 0.1;
+		ball_speed += 0.1;
 	}
 
 	if (future_x >= right_paddle_x - ball_radius && future_x <= right_paddle_x
 		&& future_y >= right_paddle_current_y - ball_radius && future_y <= right_paddle_current_y + paddle_height + ball_radius)
 	{
-		ball_angle = 180 - ball_angle;
+		let position_in_paddle = (2 * (ball_y + ball_radius - right_paddle_current_y) / (paddle_height + ball_radius * 2)) - 1;
+		ball_angle = 180 - 80 * position_in_paddle;
 		ball_x -= ball_radius / 10;
-		// ball_speed += 0.1;
+		ball_speed += 0.1;
 	}
 }
 
