@@ -28,7 +28,7 @@ let ball_speed = 3;
 
 let ball_x = 405;
 let ball_y = 260;
-let ball_direction = [-0.5, 0.2];
+let ball_angle = -45;
 
 
 
@@ -76,22 +76,22 @@ function wall_collisions(future_x, future_y)
 	if (future_x < board_x_min + ball_radius)
 	{
 		future_x = board_x_min + ball_radius;
-		ball_direction[0] *= -1;
+		ball_angle = 180 - ball_angle;
 	}
 	if (future_y < board_y_min + ball_radius)
 	{
 		future_y = board_y_min + ball_radius;
-		ball_direction[1] *= -1;
+		ball_angle = -ball_angle;
 	}
 	if (future_x > board_x_max + ball_radius / 2)
 	{
 		future_x = board_x_max + ball_radius / 2;
-		ball_direction[0] *= -1;
+		ball_angle = 180 - ball_angle;
 	}
 	if (future_y > board_y_max - ball_radius)
 	{
 		future_y = board_y_max - ball_radius;
-		ball_direction[1] *= -1;
+		ball_angle = -ball_angle;
 	}
 	ball_x = future_x;
 	ball_y = future_y;
@@ -103,22 +103,22 @@ function paddle_collisions(future_x, future_y)
 	if (future_x <= left_paddle_x + paddle_width + ball_radius && future_x >= left_paddle_x + paddle_width
 		&& future_y >= left_paddle_current_y - ball_radius && future_y <= left_paddle_current_y + paddle_height + ball_radius)
 	{
-		ball_direction[0] = Math.abs(ball_direction[0]);
-		if (future_y >= left_paddle_current_y - ball_radius && future_y <= left_paddle_current_y)
-		{
-			ball_direction[0] = 0.1;
-			ball_direction[1] = -1;
-		}
-		else if (future_y >= left_paddle_current_y && future_y <= left_paddle_current_y + ball_radius)
-		{
-			ball_direction[0] = 0.3;
-			ball_direction[1] = -1;
-		}
-		else if (future_y >= 2 * left_paddle_current_y / 5 && future_y <= 3 * left_paddle_current_y / 5)
-		{
-			ball_direction[0] *= -1;
-			ball_direction[1] = 0;
-		}
+		ball_angle = 180 - ball_angle;
+		// if (future_y >= left_paddle_current_y - ball_radius && future_y <= left_paddle_current_y)
+		// {
+		// 	ball_direction[0] = 0.1;
+		// 	ball_direction[1] = -1;
+		// }
+		// else if (future_y >= left_paddle_current_y && future_y <= left_paddle_current_y + ball_radius)
+		// {
+		// 	ball_direction[0] = 0.3;
+		// 	ball_direction[1] = -1;
+		// }
+		// else if (future_y >= 2 * left_paddle_current_y / 5 && future_y <= 3 * left_paddle_current_y / 5)
+		// {
+		// 	ball_direction[0] *= -1;
+		// 	ball_direction[1] = 0;
+		// }
 		ball_x += ball_radius / 10;
 		// ball_speed += 0.1;
 	}
@@ -126,7 +126,7 @@ function paddle_collisions(future_x, future_y)
 	if (future_x >= right_paddle_x - ball_radius && future_x <= right_paddle_x
 		&& future_y >= right_paddle_current_y - ball_radius && future_y <= right_paddle_current_y + paddle_height + ball_radius)
 	{
-		ball_direction[0] = Math.abs(ball_direction[0]) * -1;
+		ball_angle = 180 - ball_angle;
 		ball_x -= ball_radius / 10;
 		// ball_speed += 0.1;
 	}
@@ -134,8 +134,8 @@ function paddle_collisions(future_x, future_y)
 
 function move_ball()
 {
-	let future_x = ball_x + ball_direction[0] * ball_speed;
-	let future_y = ball_y + ball_direction[1] * ball_speed;
+	let future_x = ball_x + Math.cos(ball_angle * Math.PI / 180) * ball_speed;
+	let future_y = ball_y + Math.sin(ball_angle * Math.PI / 180) * ball_speed;
 	wall_collisions(future_x, future_y);
 	paddle_collisions(future_x, future_y);
 	draw_board(left_paddle_current_y, right_paddle_current_y);
