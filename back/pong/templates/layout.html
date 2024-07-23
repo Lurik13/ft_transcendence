@@ -10,12 +10,19 @@
         {% endblock %}
     </title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pong.css' %}">
+    
+    <script src="{% static 'js/collisions.js' %}"></script>
+    <script src="{% static 'js/drawing.js' %}"></script>
+    <script src="{% static 'js/events.js' %}"></script>
+    <script src="{% static 'js/pong.js' %}"></script>
     <script src="{% static 'js/main.js' %}" defer></script>
 </head>
 <body>
     <nav>
         <p> 
             <a href="/">HOME</a> | 
+            <a href="/game">GAME</a> | 
             <a href="/player/account">MY ACCOUNT</a> | 
             <a href="/friend/">FRIENDS</a> | 
             <a href="/player/register/">REGISTER</a> | 
