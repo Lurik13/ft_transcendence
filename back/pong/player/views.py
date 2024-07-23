@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .utils import send_otp
-from datetime import datetime
-from .forms import RegisterForm
+from django.contrib.auth.decorators import login_required
+from datetime import datetime, timedelta
+from .utils import send_otp, create_otp_code, create_qr_code
+from .forms import RegisterForm, PhoneForm
 from .models import Player
 import pyotp
 
@@ -35,19 +36,21 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            
-            # Check the user's preferred OTP method
+
             otp_method = request.POST.get('otp_method')
-            use_qr = otp_method == 'qr'
-            
-            if use_qr:
-                qr_data = send_otp(request, use_qr=True)
-                request.session['username'] = user.username
-                return render(request, 'player/display_qr.html', {'qr_data': qr_data})
-            else:
-                send_otp(request)
-                request.session['username'] = user.username
-                return redirect('/player/otp/')
+            use_sms = otp_method == 'sms'
+            use_email = otp_method == 'email'
+
+            totp = pyotp.TOTP(pyotp.random_base32(), interval=60)
+            request.session['username'] = user.username
+            request.session['otp_secret_key'] = totp.secret
+            request.session['otp_valid_date'] = (datetime.now() + timedelta(minutes=1)).isoformat()
+
+            if use_sms:
+                send_otp(request, totp, method='sms')
+            elif use_email:
+                send_otp(request, totp, metho='email')
+            return redirect('/player/otp/')
     else:
         form = AuthenticationForm()
     return render(request, 'player/login.html', {"form": form})
@@ -68,18 +71,37 @@ def otp_view(request):
                     user = get_object_or_404(Player, username=username)
                     login(request, user)
 
-                    # Clear session data
                     del request.session['otp_secret_key']
                     del request.session['otp_valid_date']
                     del request.session['username']
 
-                    return redirect('/player/success')
+                    return redirect(f'/player/success/?username={user.username}')
             else:
                 return render(request, 'player/otp.html', {'error': 'OTP has expired'})
-
         return render(request, 'player/otp.html', {'error': 'Invalid OTP'})
-
     return render(request, 'player/otp.html')
 
+
 def display_qr_view(request):
-    return render(request, 'player/display_qr.html')
+    totp_secret_key = request.session.get('otp_secret_key')
+    if not totp_secret_key:
+        return redirect('/player/login/')
+    totp = pyotp.TOTP(totp_secret_key, interval=60)
+    qr_data = create_qr_code(request, totp)
+    return render(request, 'player/display_qr.html', {'qr_data': qr_data})
+
+
+@login_required
+def account_view(request):
+    user = request.user
+    player = get_object_or_404(Player, username=user.username)
+
+    if request.method == 'POST':
+        form = PhoneForm(request.POST, instance=player)
+        if form.is_valid():
+            form.save()
+            return redirect(f'/player/success/?username={user.username}')
+    else:
+        form = PhoneForm(instance=player)
+
+    return render(request, 'player/account.html', {'form': form})

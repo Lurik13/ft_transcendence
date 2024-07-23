@@ -8,20 +8,16 @@
 <br>
 
     <h1>Register a New User</h1>
-    <form>
         <!-- other form fields -->
-        <form class="form-width-validation" action="/player/register/" method="post">
-            {% csrf_token %}
-            {{ form }}
-    
-        </form>
+    <form class="form-width-validation" action="/player/register/" method="post">
+        {% csrf_token %}
+        {{ form }}
         <br><br>
         <label>
-            <input type="checkbox" name="consent" required>
-            I agree to the <a href="/privacy-policy">privacy policy</a>.
+            <input type="checkbox" name="consent" required> I agree to the <a href="/privacy-policy">privacy policy</a>.
         </label>
+        <br><br>
+        <button>Submit</button>
     </form>
-    <br><br>
-    <button>Submit</button>
     
 {% endblock %}

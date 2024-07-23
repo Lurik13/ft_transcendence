@@ -10,8 +10,8 @@ class RegisterForm(UserCreationForm):
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
     phone_number = forms.CharField(
-        label='Phone Number',
-        required=True,
+        label='Phone Number (optional)',
+        required=False,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
 
@@ -21,12 +21,14 @@ class RegisterForm(UserCreationForm):
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data['phone_number']
-        try:
-            parsed_number = parse(phone_number, None)
-            if not is_valid_number(parsed_number):
+        if phone_number:
+            try:
+                parsed_number = parse(phone_number, None)
+
+                if not is_valid_number(parsed_number):
+                    raise forms.ValidationError("Invalid phone number")
+            except Exception:
                 raise forms.ValidationError("Invalid phone number")
-        except Exception:
-            raise forms.ValidationError("Invalid phone number")
         return phone_number
 
     def save(self, commit=True):
@@ -35,3 +37,9 @@ class RegisterForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class PhoneForm(forms.ModelForm):
+    class Meta:
+        model = Player
+        fields = ['phone_number']

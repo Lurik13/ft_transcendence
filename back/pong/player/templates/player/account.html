@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    MY ACCOUNT
+{% endblock %}
+
+{% block content %}
+    <br>
+    <h1>MY ACCOUNT</h1>
+    <br>
+    <h2>Set 2FA (Double authentication)</h2>
+    <p>QR Code method: <a href="/player/display_qr/">Show QR Code</a></p>
+    <br>
+    <h2>SMS method: Add / Change your phone number</h2>
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <br><br>
+{% endblock %}

@@ -9,5 +9,5 @@ urlpatterns = [
     path('login/', views.login_view, name="login"),
     path('otp/', views.otp_view, name="otp"),
     path('display_qr/', views.display_qr_view, name="display_qr"),
-    
+    path('account/', views.account_view, name="account"),    
 ]
