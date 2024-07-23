@@ -11,6 +11,8 @@ def create_otp_code(request):
     valid_date = datetime.now() + timedelta(minutes=2)
     request.session['otp_valid_date'] = str(valid_date)
 
+    
+
 def send_otp(request, totp, method='email'):
     otp = totp.now()
     # Implement your logic to send OTP via SMS or email
