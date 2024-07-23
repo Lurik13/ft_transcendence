@@ -3,6 +3,10 @@
     src: url("/static/aurebesh.otf");
 }
 
+body {
+    margin: auto;
+};
+
 /* script {
     font-family: "aurebesh";
     font-size: 100%;
