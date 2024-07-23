@@ -1,12 +1,15 @@
 @font-face {
     font-family: 'aurebesh';
-    src: url("/static/aurebesh.otf");
+    src: url("../aurebesh.otf");
 }
 
 body {
-    margin: auto;
+    margin: 0;
 };
 
+canvas {
+    border:5px solid red;
+}
 /* script {
     font-family: "aurebesh";
     font-size: 100%;
