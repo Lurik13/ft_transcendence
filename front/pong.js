@@ -18,8 +18,7 @@ class   Player
         this.h = this.yToPx(h);
         this.x = this.xToPx(x);
         this.y = (canvas.height - this.h) / 2;
-        this.rspeed = 1;
-        this.speed = this.yToPx(this.rspeed);
+        this.speed = this.yToPx(1);
     }
 
     // Converts a percentage of the canvas width into pixels
@@ -76,7 +75,8 @@ class   Ball
         this.r = this.xToPx(1);
         this.x = canvas.width / 2;
         this.y = canvas.height / 2;
-        // this.speed = this.xToPx(1);
+        this.speed = this.xToPx(1);
+        this.angle = 0 * (Math.PI / 180);
         this.velocity = {
             x: 0,
             y: 0
@@ -107,9 +107,9 @@ class   Ball
         this.x = this.x / oldCanvasWidth * canvas.width;
         this.y = this.y / oldCanvasHeight * canvas.height;
         this.r = this.r / oldCanvasHeight * canvas.height;
-        // this.speed = this.speed / oldCanvasHeight * canvas.height;
         this.velocity.x = this.velocity.x / oldCanvasHeight * canvas.height;
         this.velocity.y = this.velocity.y / oldCanvasHeight * canvas.height;
+        this.speed = this.speed / oldCanvasHeight * canvas.height;
     }
 
     // Change direction and speed of ball
@@ -126,45 +126,36 @@ class   Ball
             this.velocity.y = this.yToPx(vy);
     }
 
-    checkCollides()
+    checkCollides(futur_x, futur_y)
     {
-        // if ball is between left paddle on axe x
+        // if ball touch left paddle on axe x
         // if ball is between left paddle on axe y
-        if (this.x - this.r <= pl.x + pl.w && this.x - this.r >= pl.x
+        if (futur_x - this.r <= pl.x + pl.w && this.x >= pl.x
             && this.y >= pl.y && this.y <= pl.y + pl.h)
-            this.bounce([0.6, 0.8], [-0.8, 0.8]);
-        if (this.y - this.r <= 0)
-            this.bounce([0, 0], [0, 0]);
-        // if ball is between left paddle on axe x
-        // if ball is between left paddle on axe y
-        if (this.x + this.r >= pr.x && this.x + this.r <= pr.x + pr.w
+            this.angle = this.angle = 0 * (Math.PI / 180);
+
+        // if ball touch right paddle on axe x
+        // if ball is between right paddle on axe y
+        if (futur_x + this.r >= pr.x && this.x <= pr.x + pr.w
             && this.y >= pr.y && this.y <= pr.y + pr.h)
-            this.bounce([-0.6, -0.8], [-0.8, 0.8]);
-        if (this.y + this.r >= canvas.height)
-            this.bounce([0, 0], [0, 0]);
+            this.angle = this.angle = 180 * (Math.PI / 180);
+
+        // if (this.y - this.r <= 0)
+            // this.bounce([0, 0], [0, 0]);
+
+        // if (this.y + this.r >= canvas.height)
+            // this.bounce([0, 0], [0, 0]);
     }
 
     // Check collide and play move the ball
     move()
     {
-        this.checkCollides();
-        this.x += this.velocity.x;
-        this.y += this.velocity.y;
-    }
-
-    // Launch the ball on start (set velocity)
-    launch()
-    {
-        const   s = Math.round(Math.random());
-        var     vx = 0;
-        var     vy = 0;
-        if (s)
-            vx = Math.random() * (-0.8 - -0.6) + -0.6;
-        else
-            vx = Math.random() * (0.8 - 0.6) + 0.6;
-        vy = Math.random() * (0.8 - -0.8) + -0.8;
-        this.velocity.x = this.xToPx(vx);
-        this.velocity.y = this.yToPx(vy);
+        const   futur_x = this.x + Math.cos(this.angle) * this.speed;
+        const   futur_y = this.y + Math.sin(this.angle) * this.speed;
+        this.checkCollides(futur_x, futur_y);
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        this.speed *= 1.001;
     }
 }
 
@@ -228,4 +219,3 @@ window.addEventListener('resize', resizeCanvas);
 
 resizeCanvas();
 animate();
-ball.launch();
