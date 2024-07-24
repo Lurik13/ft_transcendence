@@ -2,6 +2,10 @@
 //////////////////////// Variables ////////////////////////
 ///////////////////////////////////////////////////////////
 
+const aurebesh = new FontFace("aurebesh", "url(../../static/aurebesh.otf)");
+document.fonts.add(aurebesh);
+aurebesh.load();
+
 const board = document.getElementById("board");
 const ctx = board.getContext("2d");
 const dimensions = 16/9;

@@ -13,12 +13,14 @@ function draw_ball(x, y)
 
 function draw_score()
 {
-	let size = 100 * (board.height + board.width) / 3000;
-
-	ctx.font = size.toString() + "px aurebesh";
-	ctx.fillStyle = "#009000";
-	ctx.textAlign = "center";
-	ctx.fillText(score[0] + "   |   " + score[1], board_x_max / 2, board_y_max / 7)
+	aurebesh.load().then(() => {
+		let size = 100 * (board.height + board.width) / 3000;
+		
+		ctx.font = size.toString() + 'px "aurebesh"';
+		ctx.fillStyle = "#009000";
+		ctx.textAlign = "center";
+		ctx.fillText(score[0] + "   |   " + score[1], board_x_max / 2, board_y_max / 6)
+	});
 }
 
 function draw_paddle(x, paddle_coords)
