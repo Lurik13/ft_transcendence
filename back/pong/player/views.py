@@ -75,7 +75,7 @@ def otp_view(request):
                     del request.session['otp_valid_date']
                     del request.session['username']
 
-                    return redirect(f'/player/success/?username={user.username}')
+                    return redirect(f'/player/account/?username={user.username}')
             else:
                 return render(request, 'player/otp.html', {'error': 'OTP has expired'})
         return render(request, 'player/otp.html', {'error': 'Invalid OTP'})
@@ -100,7 +100,7 @@ def account_view(request):
         form = PhoneForm(request.POST, instance=player)
         if form.is_valid():
             form.save()
-            return redirect(f'/player/success/?username={user.username}')
+            return redirect(f'/player/account/?username={user.username}')
     else:
         form = PhoneForm(instance=player)
 

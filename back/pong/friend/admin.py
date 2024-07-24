@@ -4,5 +4,5 @@ from .models import Friendship
 
 @admin.register(Friendship)
 class Friendship_admin(admin.ModelAdmin):
-    list_display = ["user","friend", "status","id"]
+    list_display = ["user", "friend", "status","id"]
     pass

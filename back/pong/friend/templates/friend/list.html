@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+<br><br>
     <img src="{{ you.profile_picture.url }}"/>
     {% for elem in friends %}
         {% if elem.user.username == you.username %}
