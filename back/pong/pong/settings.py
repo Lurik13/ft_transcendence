@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'friend',
     'player',
     'pyotp',
-
+    'game',
 ]
 
 MIDDLEWARE = [

@@ -13,10 +13,14 @@ function draw_ball(x, y)
 
 function draw_score()
 {
-	ctx.font = "63px Arial";
-	ctx.fillStyle = "#009000";
-	ctx.textAlign = "center";
-	ctx.fillText(score[0] + "   |   " + score[1], board_x_max / 2, board_y_max / 5)
+	aurebesh.load().then(() => {
+		let size = 100 * (board.height + board.width) / 3000;
+		
+		ctx.font = size.toString() + 'px "aurebesh"';
+		ctx.fillStyle = "#009000";
+		ctx.textAlign = "center";
+		ctx.fillText(score[0] + "   |   " + score[1], board_x_max / 2, board_y_max / 6)
+	});
 }
 
 function draw_paddle(x, paddle_coords)
@@ -34,8 +38,8 @@ function draw_paddle(x, paddle_coords)
 function draw_board(left_paddle_coords, right_paddle_coords)
 {
 	ctx.fillStyle = "#009000";
-	ctx.fillRect(10, 10, 800, 500);
-	ctx.clearRect(board_x_min, board_y_min, 780, 490);
+	ctx.fillRect(0, 0, board.width, board.height);
+	ctx.clearRect(board_min, board_min, board_x_max - board_min, board_y_max - board_min);
 	
 	draw_ball(ball_x, ball_y);
 	draw_score();
