@@ -13,7 +13,7 @@
         <p>username = {{ user.username }}</p>
         <p>email = {{ user.email }}</p>
         <p>password = {{ user.password }}</p>
-        <p>phone = {{ phone_number }}</p>
+        <p>phone = {{ user.phone_number }}</p>
         <br>
     <h2>Set 2FA (Double authentication)</h2>
         <h3>QR Code method:</h3>
@@ -27,4 +27,8 @@
             </form>
             <br>
         <br>
+    <form href="/player/logout" method="post">
+        {% csrf_token %}
+        <button type="submit">Log out</button>
+    </form>
 {% endblock %}

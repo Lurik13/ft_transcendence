@@ -11,5 +11,6 @@ urlpatterns = [
     path('display_qr/', views.display_qr_view, name="display_qr"),
     path('account/', views.account_view, name="account"),
     path('auth/42/callback/', views.auth_42_callback, name='auth_42_callback'),
+    path('logout/', views.logout_view, name='logout'),
 
 ]

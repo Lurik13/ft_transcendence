@@ -13,17 +13,28 @@
     <script src="{% static 'js/main.js' %}" defer></script>
 </head>
 <body>
+    {% if user.is_authenticated %}
     <nav>
         <p> 
             <a href="/">HOME</a> | 
             <a href="/game">GAME</a> | 
             <a href="/player/account">MY ACCOUNT</a> | 
             <a href="/friend/">FRIENDS</a> | 
-            <a href="/player/register/">REGISTER</a> | 
-            <a href="/player/login/">LOGIN</a> | 
-            <a href="/about">ABOUT</a>
+            <a href="/about">ABOUT</a> |
+            <a href="/player/logout/">LOGOUT</a>
         </p>
     </nav>
+    {% else %}
+    <nav>
+        <p> 
+           <a href="/">HOME</a> | 
+           <a href="/game">GAME</a> | 
+           <a href="/player/register/">REGISTER</a> | 
+           <a href="/player/login/">LOGIN</a> | 
+           <a href="/about">ABOUT</a>
+        </p>
+    </nav>
+    {% endif %}
     <main>
         {% block content %}
         {% endblock %}

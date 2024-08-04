@@ -29,10 +29,6 @@
         <button type="submit" name="login">Log in</button>
     </form>
     <br><br>
-    <form method="post" action="/player/login/">
-        {% csrf_token %}
-        <a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fplayer%2Fauth%2F42%2Fcallback%2F&response_type=code">Log in with 42</a>
-        <br>
-        <button type="submit" name="login_with_42">Log in with 42</button>
-    </form>
+    <a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fplayer%2Fauth%2F42%2Fcallback%2F&response_type=code">Log in with 42</a>
+
 {% endblock %}

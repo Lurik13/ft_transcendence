@@ -16,8 +16,12 @@
         </div>
         <button type="submit">Confirm</button>
     </form>
-
+    <form action="" method="post">
+        {% csrf_token %}
+        <button action="Resend_code">Resend code</button>
+    </form>
     {% if error %}
+        <br>
         <p style="color: red;">{{ error }}</p>
     {% endif %}
     </form>
