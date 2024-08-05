@@ -10,8 +10,12 @@
 <body>
     <h1>Submit Another User's Username</h1>
     <br>
+    {% if messages %}
+        {% for message in messages %}
+            <h2 style="color: red">⚠️{{ message }}⚠️</h2>
+        {% endfor %}
+    {% endif %}
 
-    <p> {{ user.username }} {{ user.id }} </p>
     <form method="post">
         {% csrf_token %}
         <label for="username">Username:</label>
