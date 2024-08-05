@@ -3,7 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
-from .utils import send_otp, create_otp_code, create_qr_code
+from .otp import send_otp, create_otp_code, create_qr_code
 from .forms import RegisterForm, PhoneForm
 from .models import Player
 import pyotp
@@ -38,28 +38,24 @@ def login_view(request):
             form = AuthenticationForm(data=request.POST)
             if form.is_valid():
                 user = form.get_user()
-                # add condition if otp set
 
                 otp_method = request.POST.get('otp_method')
-                use_sms = otp_method == 'sms'
-                use_email = otp_method == 'email'
-
                 totp = pyotp.TOTP(pyotp.random_base32(), interval=60)
+
                 request.session['username'] = user.username
                 request.session['otp_secret_key'] = totp.secret
                 request.session['otp_valid_date'] = (datetime.now() + timedelta(minutes=1)).isoformat()
-                send_otp(request, totp, method='sms')
-                #if use_sms:
-                #    send_otp(request, totp, method='sms')
-                #elif use_email:
-                #    send_otp(request, totp, metho='email')
-                #login(request, user)
+
+                if  otp_method == 'sms':
+                    send_otp(request, totp, method='sms')
+                elif otp_method == 'email':
+                    send_otp(request, totp, method='email')
                 return redirect('/player/otp/')
-            elif 'login_with_42' in request.POST: 
-                redirect_uri = settings.FT42_REDIRECT_URI
-                client_id = settings.FT42_CLIENT_ID
-                auth_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-                return redirect(auth_url)
+            #elif 'login_with_42' in request.POST: 
+             #   redirect_uri = settings.FT42_REDIRECT_URI
+              #  client_id = settings.FT42_CLIENT_ID
+               # auth_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+                #return redirect(auth_url)
     else:
         form = AuthenticationForm()
     return render(request, 'player/login.html', {"form": form})
@@ -119,7 +115,6 @@ def account_view(request):
     return render(request, 'player/account.html', {'form': form})
 
 
-
 def auth_42_callback(request):
     code = request.GET.get('code')
     if not code:
@@ -166,7 +161,6 @@ def auth_42_callback(request):
     print('email : ' + user_info.get('email'))
     print('last_name : ' + user_info.get('last_name'))
     print('############################')
-
 
     user, created = Player.objects.get_or_create(
         username=username,

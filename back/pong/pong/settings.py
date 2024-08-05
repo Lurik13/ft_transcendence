@@ -145,7 +145,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #Custom user model
 LOGIN_URL = "player/login/"
 
-# 42 API credentials
+# 42 API
 FT42_CLIENT_ID = 'u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996'
 FT42_CLIENT_SECRET = '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'
 FT42_REDIRECT_URI = 'http://localhost:8000/player/auth/42/callback/'
+
+# Vonage API
+VONAGE_API_KEY = 'afd3aa42'
+VONAGE_SECRET_KEY = 'iVfgXrRleEydLwA0'
