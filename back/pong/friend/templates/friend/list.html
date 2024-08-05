@@ -6,12 +6,14 @@
 
 {% block content %}
 <br><br>
-    <img src="{{ you.profile_picture.url }}"/>
     {% for elem in friends %}
+        <p>
         {% if elem.user.username == you.username %}
-            <p>{{elem.friend.username}}
+            <img src="{{ elem.friend.profile_picture.url }}" width="80" height="40"/>
+            {{elem.friend.username}}
         {% else %}
-            <p>{{elem.user.username}}
+            <img src="{{ elem.user.profile_picture.url }}" width="80" height="40"/>
+            {{elem.user.username}}
         {% endif %}
         | <a href= "{% url 'friend:del' elem.id %}">delete</a></p>
     {% endfor %}

@@ -16,14 +16,17 @@ def add(request):
         you = request.user
         you.last_login = timezone.now()
         you.save()
+        if request.POST.get('username') == you.username:
+            messages.add_message(request, messages.INFO, "can't add yourself")
+            return render(request, "friend/add.html")
         users = Player.objects.filter(username=request.POST.get('username'))
         if len(users) == 0:
-            messages.info(request, ("user doesn't exist"))
+            messages.add_message(request, messages.INFO, ("user doesn't exist"))
             return render(request, "friend/add.html")
         new_friend = Friendship.objects.filter(Q(user=you, friend=users[0]) | Q(user=users[0], friend=you))
         if len(new_friend) != 0:
-            messages.info(request, ("already friend"))
-            return render(request, "friend/work.html", {'friend':users[0], 'you':you, 'n':new_friend})
+            messages.add_message(request, messages.INFO, ("invitation already sent"))
+            return render(request, "friend/add.html")
         new_friend = Friendship(user=you, friend=users[0])
         new_friend.save()
         return render(request, "friend/work.html", {'friend':users[0], 'you':you})
