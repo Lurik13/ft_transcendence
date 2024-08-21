@@ -1,9 +1,10 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+// todo: import { createMenu } from '../components/CreateMenu.vue'
+
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+    <main>
+        <div class="container-xxl">100% wide until extra extra large breakpoint</div>
+    </main>
 </template>
