@@ -129,6 +129,7 @@ def auth_42_callback(request):
         'redirect_uri': settings.FT42_REDIRECT_URI,
     }
 
+
     print('############################')
     print('client_id : ' + settings.FT42_CLIENT_ID)
     print('client_secret : ' + settings.FT42_CLIENT_SECRET)

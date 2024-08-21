@@ -11,6 +11,17 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+import json
+from django.core.exceptions import ImproperlyConfigured
+
+with open("secrets.json") as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        raise ImproperlyConfigured(f"Set the {setting} environment variable.")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,17 +31,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-laeznj$)dio!dq^n_ysy^vy8))umjr2(o_^)%i&j2keq-awma5'
+SECRET_KEY = get_secret('secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = []
 #ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'yourdomain.com']
 
-# 42 API credentials
-FT42_CLIENT_ID = 'u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996'
-FT42_CLIENT_SECRET = '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'
-FT42_REDIRECT_URI = 'http://localhost:8000/player/auth/42/callback/'
 
 # CSRF settings
 #CSRF_TRUSTED_ORIGINS = ['https://yourdomain.com']
@@ -147,9 +154,15 @@ LOGIN_URL = "player/login/"
 
 # 42 API
 FT42_CLIENT_ID = 'u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996'
-FT42_CLIENT_SECRET = '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'
+FT42_CLIENT_SECRET = get_secret('FT42_client_secret')
 FT42_REDIRECT_URI = 'http://localhost:8000/player/auth/42/callback/'
 
 # Vonage API
 VONAGE_API_KEY = 'afd3aa42'
-VONAGE_SECRET_KEY = 'iVfgXrRleEydLwA0'
+VONAGE_SECRET_KEY = get_secret('vonage_secret_key')
+
+# SMTP Server Configuration
+SMTP_SERVER = "127.0.0.1"
+SMTP_PORT = 1025
+SMTP_USERNAME = "proj42_lh@proton.me"
+SMTP_PASSWORD = get_secret('smtp_password')
