@@ -1,10 +1,14 @@
-<script setup>
-// todo: import { createMenu } from '../components/CreateMenu.vue'
+<script setup> 
+import CreateButton from '../components/CreateButton.vue'
 
 </script>
 
 <template>
     <main>
-        <div class="container-xxl">100% wide until extra extra large breakpoint</div>
+        <CreateButton />
     </main>
 </template>
+
+<style lang="scss">
+@import './../assets/main.scss';
+</style>

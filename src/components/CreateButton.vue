@@ -1,18 +1,22 @@
-<script setup>
-import { ref } from 'vue'
+<script setup> </script>
 
-// @name is string for id of menu
-// @items is table of objects
-// @component is table component css.
-function createButton(name, items, component) {
-    if (!name || name.trim() === "") {
-        console.log("Menu name is required");
-        return;
-    }
-    if (!items || items.length === 0) {
-        console.log("Menu items are required");
-        return;
-    }
-    console.log("Menu created");
+<template>
+    <button class="button">Create</button>
+</template>
+
+<style>
+.button {
+    background-color: #4CAF50;
+    opacity: 0.7;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    border: rgb(255, 166, 0);
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
 }
-</script>
+
+.button:hover {
+    opacity: 1;
+}
+</style>
