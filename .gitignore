@@ -3,4 +3,4 @@
 
 # Django
 __pycache__
-env
+.venv
