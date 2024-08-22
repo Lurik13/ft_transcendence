@@ -153,16 +153,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = "player/login/"
 
 # 42 API
-FT42_CLIENT_ID = 'u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996'
+FT42_CLIENT_ID = get_secret('FT42_client_id')
 FT42_CLIENT_SECRET = get_secret('FT42_client_secret')
 FT42_REDIRECT_URI = 'http://localhost:8000/player/auth/42/callback/'
 
 # Vonage API
-VONAGE_API_KEY = 'afd3aa42'
+VONAGE_API_KEY = get_secret('vonage_api_key')
 VONAGE_SECRET_KEY = get_secret('vonage_secret_key')
 
 # SMTP Server Configuration
-SMTP_SERVER = "127.0.0.1"
-SMTP_PORT = 1025
-SMTP_USERNAME = "proj42_lh@proton.me"
+SMTP_SERVER = get_secret('smtp_server')
+SMTP_PORT = get_secret('smtp_port')
+SMTP_USERNAME = get_secret('smtp_username')
 SMTP_PASSWORD = get_secret('smtp_password')

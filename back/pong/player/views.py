@@ -10,6 +10,18 @@ import pyotp
 import requests
 from django.conf import settings
 
+import json
+from django.core.exceptions import ImproperlyConfigured
+
+with open("secrets.json") as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        raise ImproperlyConfigured(f"Set the {setting} environment variable.")
+
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -41,17 +53,26 @@ def login_view(request):
 
                 otp_method = request.POST.get('otp_method')
                 totp = pyotp.TOTP(pyotp.random_base32(), interval=60)
-
                 request.session['username'] = user.username
                 request.session['otp_secret_key'] = totp.secret
                 request.session['otp_valid_date'] = (datetime.now() + timedelta(minutes=1)).isoformat()
+               
+                print("username: " + request.session['username'])
+                print("otp_secret_key: " + request.session['otp_secret_key'])
+                print("otp_valid_date: " + request.session['otp_valid_date'])
 
                 if  otp_method == 'sms':
-                    send_otp(request, totp, method='sms')
+                    contact = str(user.phone_number)
+                    print("contact: " + contact)
+                    send_otp(request, totp, contact, method='sms')
                 elif otp_method == 'email':
-                    send_otp(request, totp, method='email')
+                    contact = user.email
+                    print("contact: " + contact)
+                    send_otp(request, totp, contact, method='email')
                 return redirect('/player/otp/')
-            #elif 'login_with_42' in request.POST: 
+        #else:
+            #auth_url = f"https://api.intra.42.fr/oauth/authorize?client_id={settings.FT42_CLIENT_ID}&redirect_uri={settings.FT42_REDIRECT_URI}&response_type=code"
+            #return render(request, auth_url)
              #   redirect_uri = settings.FT42_REDIRECT_URI
               #  client_id = settings.FT42_CLIENT_ID
                # auth_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
