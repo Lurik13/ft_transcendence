@@ -4,7 +4,7 @@ import { ref } from 'vue'
 // @name is string for id of menu
 // @items is table of objects
 // @component is table component css.
-function createMenu(name, items, component) {
+function createButton(name, items, component) {
     if (!name || name.trim() === "") {
         console.log("Menu name is required");
         return;
