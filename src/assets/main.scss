@@ -1,7 +1,9 @@
 body {
-  background-image: url('img/bg_home.png');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+	background-image: url('img/bg_home.png');
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	overflow: hidden;
+	margin: 0;
 }

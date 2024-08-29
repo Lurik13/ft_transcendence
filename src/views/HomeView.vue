@@ -1,12 +1,9 @@
-<script setup> 
+<script setup>
 import CreateButton from '../components/CreateButton.vue'
-
 </script>
 
 <template>
-    <main>
-        <CreateButton />
-    </main>
+    <CreateButton />
 </template>
 
 <style lang="scss">
