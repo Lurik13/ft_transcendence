@@ -1,29 +1,46 @@
 <script setup>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const isPlaying = ref(false);
+
 function goToNewPage() {
-    router.push('/game'); // Remplacez '/new-page' par la route que vous souhaitez
+    router.push('/game');
+}
+
+function toggleSound() {
+    isPlaying.value = !isPlaying.value;
+}
+
+function clickButton() {
+    console.log('Button clicked');
 }
 </script>
 
 <template>
-    <div class="buttonContainer">
-        <button class="button" @click="goToNewPage">
-            <i class="fas fa-play" style="margin-right: 8px;"></i>
-            <span class="buttonText buttonTextSize">Play</span>
-        </button>
+    <div id="app">
+        <div class="buttonContainer">
+            <button class="button" @click="goToNewPage">
+                <i class="fas fa-play" style="margin-right: 8px;"></i>
+                <span class="buttonText buttonTextSize">Play</span>
+            </button>
 
-        <button class="button button-credits" @click="clickButton">
-            <span class="buttonText">Credits</span>
-        </button>
+            <button class="button button-credits" @click="clickButton">
+                <span class="buttonText">Credits</span>
+            </button>
 
-        <button class="button button-log" @click="clickButton">
-            <span class="buttonText">Login</span>
-        </button>
-        <button class="button button-settings" @click="clickButton">
-            <i class="fas fa-gear"></i>
-        </button>
+            <button class="button button-log" @click="clickButton">
+                <span class="buttonText">Login</span>
+            </button>
+            <button class="button button-settings" @click="clickButton">
+                <i class="fas fa-gear"></i>
+            </button>
+            <button class="button button-sound" @click="toggleSound">
+                <i v-if="isPlaying" class="fa-solid fa-volume-high"></i>
+                <i v-else class="fa-solid fa-volume-xmark"></i>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -75,7 +92,7 @@ function goToNewPage() {
     position: absolute;
     width: 120px;
     height: 50px;
-    top: 40px;
+    top: 10px;
     right: 10px;
 }
 
@@ -83,14 +100,20 @@ function goToNewPage() {
     position: absolute;
     width: 60px;
     height: 50px;
-    top: 40px;
+    top: 10px;
     right: 140px;
 }
 
+.button-sound {
+    position: absolute;
+    width: 60px;
+    height: 50px;
+    top: 10px;
+    left: 10px;
+}
+
 .button-credits {
-    /* position: absolute; */
     width: 120px;
     height: 50px;
-    /* bottom: -40px; */
 }
 </style>
