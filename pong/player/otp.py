@@ -12,8 +12,6 @@ from django.shortcuts import get_object_or_404
 from .models import Player
 from .jwt import generate_jwt, decode_jwt, verify_jwt
 
-
-
 ##
 def create_otp_code(request):
     totp = pyotp.TOTP(pyotp.random_base32(), interval=120)
@@ -21,6 +19,16 @@ def create_otp_code(request):
     request.session['otp_secret_key'] = totp.secret
     valid_date = datetime.now() + timedelta(minutes=2)
     request.session['otp_valid_date'] = str(valid_date)
+
+
+def create_qr_code(request, totp):
+    otp_url = totp.provisioning_uri(request.user.email, issuer_name="pong")
+    qr = qrcode.make(otp_url)
+    img = BytesIO()
+    qr.save(img, format="PNG")
+    img.seek(0)
+    qr_data = base64.b64encode(img.getvalue()).decode()
+    return qr_data
 ##
 
 
@@ -78,14 +86,3 @@ def send_otp(request, totp, contact, method):
         print("----------------------------------")
 
 
-
-
-
-def create_qr_code(request, totp):
-    otp_url = totp.provisioning_uri(request.user.email, issuer_name="pong")
-    qr = qrcode.make(otp_url)
-    img = BytesIO()
-    qr.save(img, format="PNG")
-    img.seek(0)
-    qr_data = base64.b64encode(img.getvalue()).decode()
-    return qr_data

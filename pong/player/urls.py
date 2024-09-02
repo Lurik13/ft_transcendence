@@ -12,6 +12,5 @@ urlpatterns = [
     path('account/', views.account_view, name="account"),
     path('auth/42/callback/', views.auth_42_callback, name='auth_42_callback'),
     path('logout/', views.logout_view, name='logout'),
-    path('verify-jwt/', views.verify_jwt, name='verify-jwt'),
-
+    path('verify-jwt/', views.verify_jwt, name='verify_jwt'),
 ]

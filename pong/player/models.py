@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-from datetime import datetime, timedelta
 
 class Player(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, default='profile_pictures/fallback.png')

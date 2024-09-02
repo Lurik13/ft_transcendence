@@ -5,15 +5,15 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.middleware.csrf import get_token
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from .otp import send_otp, create_otp_code, create_qr_code
-from .jwt import generate_jwt, decode_jwt, verify_jwt
+from .jwt import generate_jwt, decode_jwt
 from .forms import RegisterForm, PhoneForm
 from .models import Player, BlacklistedToken
 import pyotp
 import requests
 import jwt
-
 import json
 from django.core.exceptions import ImproperlyConfigured
 
@@ -82,13 +82,13 @@ def login_view(request):
 
             # Set the JWT as a cookie
             response.set_cookie(
-                'jwt_token',
+                'jwt',
                 token,
                 httponly=True,  # Prevent JavaScript access to the cookie
                 secure=True,  # Use Secure flag to ensure it's only sent over HTTPS
                 samesite='Lax'  # Prevent CSRF attacks
             )
-
+            print("JWT cookie set:", response.cookies['jwt'].value)
             #user_token = decode_jwt(request.session['jwt_token'])
             #print(f"user id from token: {user_token}")   
             print("----------------------------------")
@@ -113,6 +113,7 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'player/login.html', {"form": form})
 
+@csrf_exempt
 def otp_view(request):
     if request.method == "POST":
         user_otp = request.POST.get('otp')
@@ -127,11 +128,13 @@ def otp_view(request):
                 if totp.verify(user_otp):
                     username = request.session.get('username')
                     user = get_object_or_404(Player, username=username)
+
+
                     #login(request, user)
 
-                    user_token = decode_jwt(request.session['jwt_token'])
-                    print(f"user id from token: {user_token}")   
-                    print("----------------------------------")
+                    #user_token = decode_jwt(request.session['jwt_token'])
+                    #print(f"user id from token: {user_token}")   
+                    #print("----------------------------------")
                     
                     # Clear the session data
                     del request.session['otp_secret_key']
@@ -210,11 +213,13 @@ def auth_42_callback(request):
 
     response = requests.post(token_url, data=data)
     if response.status_code != 200:
+        print("STATUS 200")
         return redirect('/player/login/')
 
     token_info = response.json()
     access_token = token_info.get('access_token')
     if not access_token:
+        print("NOT ACCESS TOKEN !")
         return redirect('/player/login/')
 
     user_info_response = requests.get(
@@ -243,14 +248,40 @@ def auth_42_callback(request):
         defaults={'email': email}
     )
 
-    login(request, user)
-    return redirect(f'/player/account/?username={user.username}')
+    return render(request, 'player/account.html', {'user': user})
 
 
-#@login_required
 def logout_view(request):
-    # Clear the JWT from the client side (in practice, handle this on the client side)
     response = redirect('/player/login/')
-    #response.delete_cookie('jwt_token')  # If you're using cookies
-    # Alternatively, clear local storage on the client side with JavaScript
+    token = request.COOKIES.get('jwt')
+    if token:
+        BlacklistedToken.objects.create(token=token)
+        response.delete_cookie('jwt')
     return response
+
+
+
+from django.http import HttpResponse
+
+def some_view(request):
+    token = request.COOKIES.get('jwt_token')
+    if token:
+        print(f"JWT Token from Cookie: {token}")
+        return HttpResponse(f"Token: {token}")
+    else:
+        return HttpResponse("No JWT Token found in cookies")
+
+
+from django.http import JsonResponse
+from .jwt import decode_jwt
+
+def verify_jwt(request):
+    token = request.COOKIES.get('jwt')
+    if not token:
+        return JsonResponse({'valid': False, 'message': 'No token found'}, status=401)
+    
+    user = decode_jwt(token)
+    if user:
+        return JsonResponse({'valid': True, 'message': 'Token is valid'})
+    else:
+        return JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)
