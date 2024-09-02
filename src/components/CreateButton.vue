@@ -4,17 +4,25 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const isPlaying = ref(false);
+const isRotating = ref(false);
 
 function goToNewPage() {
     router.push('/game');
 }
 
-function toggleSound() {
+function toggleIcon() {
     isPlaying.value = !isPlaying.value;
 }
 
 function clickButton() {
     console.log('Button clicked');
+}
+
+function rotateIcon() {
+    isRotating.value = true;
+    setTimeout(() => {
+        isRotating.value = false;
+    }, 1000);
 }
 </script>
 
@@ -33,10 +41,13 @@ function clickButton() {
             <button class="button button-log" @click="clickButton">
                 <span class="buttonText">Login</span>
             </button>
-            <button class="button button-settings" @click="clickButton">
-                <i class="fas fa-gear"></i>
+
+            <button class="button button-settings" @click="rotateIcon">
+                <!-- Ajoutez ou enlevez la classe icon-rotate selon l'état -->
+                <i :class="['fas fa-gear', { 'icon-rotate': isRotating }]"></i>
             </button>
-            <button class="button button-sound" @click="toggleSound">
+
+            <button class="button button-sound" @click="toggleIcon">
                 <i v-if="isPlaying" class="fa-solid fa-volume-high"></i>
                 <i v-else class="fa-solid fa-volume-xmark"></i>
             </button>
@@ -45,6 +56,22 @@ function clickButton() {
 </template>
 
 <style>
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.icon-rotate {
+    display: inline-block;
+    animation: rotate 1s ease-out;
+}
+
+/* Autres styles existants */
 .buttonContainer {
     display: flex;
     flex-direction: column;
