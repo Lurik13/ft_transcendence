@@ -5,16 +5,27 @@
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const isPlaying = ref(false);
+const isPlaying = ref(true);
 const isRotating = ref(false);
+var myAudio = document.getElementById("myAudio");
 
-function goToNewPage() {
+function goToGame() {
     router.push('/game');
 }
 
-function toggleIcon() {
-    isPlaying.value = !isPlaying.value;
+function goToCredits() {
+    router.push('/credits');
 }
+
+function togglePlay() {
+    isPlaying.value = !isPlaying.value;
+    if(document.getElementById('background_audio').muted == false){
+    document.getElementById('background_audio').muted = true;
+    } 
+    else {
+    document.getElementById('background_audio').muted = false;
+    }
+};
 
 function clickButton() {
     console.log('Button clicked');
@@ -30,14 +41,19 @@ function rotateIcon() {
 
 <template>
     <main>
+        <audio id="background_audio" autoplay="true" loop="loop">
+        <source src="./../assets/test.mp3">
+            Your browser does not support the audio element.
+        </audio>
+
         <div id="wrapper">
             <div class="buttonContainer">
-            <button class="button" @click="goToNewPage">
+            <button class="button" @click="goToGame">
                 <i class="fas fa-play" style="margin-right: 8px;"></i>
                 <span class="buttonText buttonTextSize">Play</span>
             </button>
 
-            <button class="button button-credits" @click="clickButton">
+            <button class="button button-credits" @click="goToCredits">
                 <span class="buttonText">Credits</span>
             </button>
 
@@ -50,11 +66,11 @@ function rotateIcon() {
                 <i :class="['fas fa-gear', { 'icon-rotate': isRotating }]"></i>
             </button>
 
-            <button class="button button-sound" @click="toggleIcon">
+            <button class="button button-sound" @click="togglePlay()">
                 <i v-if="isPlaying" class="fa-solid fa-volume-high"></i>
                 <i v-else class="fa-solid fa-volume-xmark"></i>
             </button>
-        </div>
+            </div>
             <div id="dropup">
                 <CreateDropupButton />
             </div>
@@ -99,7 +115,7 @@ function rotateIcon() {
         position: relative;
         top: 690px;
         left: -770px;
-    }
+    } 
 
     #video {
         z-index: -1;
@@ -174,7 +190,7 @@ function rotateIcon() {
     width: 60px;
     height: 50px;
     top: 10px;
-    left: -75vh;
+    left: -65vh;
 }
 
     .button-credits {
