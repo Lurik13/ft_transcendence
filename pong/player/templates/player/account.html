@@ -43,34 +43,18 @@
                 Activate Email 2FA
             </label>
         
-            <div id="email-section" {% if not user.email_2fa_active %}style="display:none;"{% endif %}>
-                {{ email_form.email.label_tag }}
-                {{ email_form.email }}
-                {% if email_form.email.errors %}
-                    <div class="error">{{ email_form.email.errors }}</div>
-                {% endif %}
-            </div>
-            <br>
-            <br>
+        <br>
+        <br>
+        {% if user.phone_number %}
             <h3>SMS method</h3>
-            <form method="post">
-                {% csrf_token %}
-                <label>
-                    <input type="checkbox" id="sms_2fa_active" name="sms_2fa_active" checked>
-                    Activate SMS 2FA
-                </label>
-
-                <div id="phone-number-section" {% if not user.sms_2fa_active %}style="display:none;"{% endif %}>
-                    {{ phone_form.phone_number.label_tag }}
-                    {{ phone_form.phone_number }}
-                    {% if phone_form.phone_number.errors %}
-                        <div class="error">{{ phone_form.phone_number.errors }}</div>
-                    {% endif %}
-                </div>
-                <br><br>
-                <button type="submit">Save</button>
-            </form>
-
+            <label>
+            <input type="checkbox" id="sms_2fa_active" name="sms_2fa_active" {% if user.sms_2fa_active %}checked{% endif %}>
+            Activate SMS 2FA
+            </label>
+            <br><br>
+        {% endif %}
+            <button type="submit">Save</button>
+        </form>
     <br>
     <hr>
     {% endif %}

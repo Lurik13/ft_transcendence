@@ -253,46 +253,14 @@ def account_view(request):
     if not user:
         return redirect('/player/login/')
 
-    #user = request.user
-    user.nickname = user.username
-    user.save()
-
     if request.method == 'POST':
-        phone_form = PhoneForm(request.POST, instance=user)
-        email_form = RegisterForm(request.POST, instance=user)  # Using RegisterForm for email validation
-
         email_2fa_active = 'email_2fa_active' in request.POST
         sms_2fa_active = 'sms_2fa_active' in request.POST
-
-        if sms_2fa_active:
-            if not phone_form.is_valid():
-                return render(request, 'player/account.html', {
-                    'user': user,
-                    'phone_form': phone_form,
-                    'email_form': email_form,
-                    'error': 'Invalid phone number. Please provide a valid number to enable SMS 2FA.'
-                })
-            phone_form.save()
-
-        if email_2fa_active:
-            if not email_form.is_valid():
-                return render(request, 'player/account.html', {
-                    'user': user,
-                    'phone_form': phone_form,
-                    'email_form': email_form,
-                    'error': 'Invalid email address. Please provide a valid email to enable Email 2FA.'
-                })
-            email_form.save()
 
         user.email_2fa_active = email_2fa_active
         user.sms_2fa_active = sms_2fa_active
         user.save()
-
-        return render(request, 'player/account.html', {'user': user, 'phone_form': phone_form, 'email_form': email_form})
-
-    phone_form = PhoneForm(instance=user)
-    email_form = RegisterForm(instance=user)
-    return render(request, 'player/account.html', {'user': user, 'phone_form': phone_form, 'email_form': email_form})
+    return render(request, 'player/account.html', {'user': user})
 
 
 def logout_view(request):
