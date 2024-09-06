@@ -16,6 +16,7 @@ def generate_jwt(user):
     token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return token
 
+
 def decode_jwt(token):
     if BlacklistedToken.objects.filter(token=token).exists():
         return {'error': 'Token is blacklisted'}
@@ -33,10 +34,13 @@ def decode_jwt(token):
 
 
 def verify_jwt(request):
-    auth_header = request.headers.get('Authorization')
-    if auth_header and auth_header.startswith('Bearer '):
-        token = auth_header.split(' ')[1]
-        payload = decode_jwt(token)
-        if payload:
-            return JsonResponse({'valid': True})
-    return JsonResponse({'valid': False}, status=401)
+    token = request.COOKIES.get('jwt')
+    if not token:
+        return JsonResponse({'valid': False, 'message': 'No token found'}, status=401)
+    
+    user = decode_jwt(token)
+    if user:
+        print(f"user: {user}")
+        return JsonResponse({'valid': True, 'message': 'Token is valid'})
+    else:
+        return JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)

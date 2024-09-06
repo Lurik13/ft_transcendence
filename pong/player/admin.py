@@ -5,5 +5,5 @@ from .models import Player
 @admin.register(Player)
 class Player_admin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('profile_picture', 'rank', 'phone_number')}),
+        (None, {'fields': ('profile_picture', 'nickname', 'rank', 'phone_number', 'win', 'lose')}),
     )

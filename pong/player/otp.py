@@ -1,16 +1,10 @@
 import pyotp
-import qrcode
-import base64
 import vonage
 import smtplib
-from io import BytesIO
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from django.conf import settings
-from django.shortcuts import get_object_or_404
-from .models import Player
-from .jwt import generate_jwt, decode_jwt, verify_jwt
 
 ##
 def create_otp_code(request):
@@ -20,15 +14,6 @@ def create_otp_code(request):
     valid_date = datetime.now() + timedelta(minutes=2)
     request.session['otp_valid_date'] = str(valid_date)
 
-
-def create_qr_code(request, totp):
-    otp_url = totp.provisioning_uri(request.user.email, issuer_name="pong")
-    qr = qrcode.make(otp_url)
-    img = BytesIO()
-    qr.save(img, format="PNG")
-    img.seek(0)
-    qr_data = base64.b64encode(img.getvalue()).decode()
-    return qr_data
 ##
 
 
@@ -84,5 +69,4 @@ def send_otp(request, totp, contact, method):
         except Exception as e:
             print(f"Failed to send email: {e}")
         print("----------------------------------")
-
 

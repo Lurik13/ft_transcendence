@@ -14,10 +14,13 @@
             <label for="otp">OTP:</label>
             <input class="form" type="text" name="otp" required>
         </div>
+        <br>
         <button type="submit">Confirm</button>
+        <br>
     </form>
     <form action="" method="post">
         {% csrf_token %}
+        <br>
         <button action="Resend_code">Resend code</button>
     </form>
     {% if error %}

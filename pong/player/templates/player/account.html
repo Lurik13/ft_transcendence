@@ -9,25 +9,94 @@
 <h1>MY ACCOUNT</h1>
 <br>
     <h2>Infos</h2>
-        <br>
-        <p>username = {{ user.username }}</p>
-        <p>email = {{ user.email }}</p>
-        <p>password = {{ user.password }}</p>
-        <p>phone = {{ user.phone_number }}</p>
-        <p>id = {{ user.id }}</p>
-        <p>token = {{ user.token }}</p>
+    <br>
 
+    {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="Profile Picture of {{ user.username }}">
         <br>
+    {% endif %}
+
+    <p>Username: {{ user.username }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>Phone: {{ user.phone_number }}</p>
+    <p>ID: {{ user.id }}</p>
+    <p>Student: {{ user.student }}</p>
+    <p>Email 2FA: {{ user.email_2fa_active }}</p>
+    <p>SMS 2FA: {{ user.sms_2fa_active }}</p>
+    <br>
+
+    
+    {% if not user.student %}
+    <a href="{% url 'player:update' %}">Edit info</a> <br>
+    <a href="{% url 'player:update_password' %}">Change password</a>
+    <br>
+    <br><hr>
+    <br>
     <h2>Set 2FA (Double authentication)</h2>
-        <h3>QR Code method:</h3>
-            <a href="/player/display_qr/">Show QR Code</a>
+    <br>
+
+        <form method="post">
+            {% csrf_token %}
+            <h3>Email method</h3>
+            <label>
+                <input type="checkbox" id="email_2fa_active" name="email_2fa_active" {% if user.email_2fa_active %}checked{% endif %}>
+                Activate Email 2FA
+            </label>
+        
+            <div id="email-section" {% if not user.email_2fa_active %}style="display:none;"{% endif %}>
+                {{ email_form.email.label_tag }}
+                {{ email_form.email }}
+                {% if email_form.email.errors %}
+                    <div class="error">{{ email_form.email.errors }}</div>
+                {% endif %}
+            </div>
             <br>
-        <h3>SMS method: Add / Change your phone number</h3>
-            <form method="post" action="">
+            <br>
+            <h3>SMS method</h3>
+            <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                <label>
+                    <input type="checkbox" id="sms_2fa_active" name="sms_2fa_active" checked>
+                    Activate SMS 2FA
+                </label>
+
+                <div id="phone-number-section" {% if not user.sms_2fa_active %}style="display:none;"{% endif %}>
+                    {{ phone_form.phone_number.label_tag }}
+                    {{ phone_form.phone_number }}
+                    {% if phone_form.phone_number.errors %}
+                        <div class="error">{{ phone_form.phone_number.errors }}</div>
+                    {% endif %}
+                </div>
+                <br><br>
                 <button type="submit">Save</button>
             </form>
-            <br>
-        <br>
+
+    <br>
+    <hr>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'player:logout' %}">Log out</a> <br>
+
+
+<script>
+    document.getElementById('sms_2fa_active').addEventListener('change', function() {
+        var phoneNumberSection = document.getElementById('phone-number-section');
+        if (this.checked) {
+            phoneNumberSection.style.display = 'block';
+        } else {
+            phoneNumberSection.style.display = 'none';
+        }
+    });
+
+    document.getElementById('email_2fa_active').addEventListener('change', function() {
+        var emailSection = document.getElementById('email-section');
+        if (this.checked) {
+            emailSection.style.display = 'block';
+        } else {
+            emailSection.style.display = 'none';
+        }
+    });
+</script>
+
 {% endblock %}

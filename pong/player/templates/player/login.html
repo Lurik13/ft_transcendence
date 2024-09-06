@@ -11,24 +11,53 @@
 
     <form class="form-width-validation" action="/player/login/" method="post">
         {% csrf_token %}
-        {{ form }}
-        <br><br>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username">
+        </div>
 
-        <label>
-            <input type="radio" name="otp_method" value="sms" checked> Receive OTP via SMS
-        </label>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Enter your password">
+        </div>
+
         <br>
-        <label>
-            <input type="radio" name="otp_method" value="email" checked> Receive OTP via Email
-        </label>
-        <br>
-        <label>
-            <input type="radio" name="otp_method" value="qr"> Use QR Code
-        </label>
-        <br><br>
+
+        {% if form.is_valid %}
+            {% if user.sms_2fa_active %}
+                <label>
+                    <input type="radio" name="otp_method" value="sms" checked> Receive OTP via SMS
+                </label>
+                <br>
+            {% endif %}
+
+            {% if user.email_2fa_active %}
+                <label>
+                    <input type="radio" name="otp_method" value="email" checked> Receive OTP via Email
+                </label>
+                <br>
+            {% endif %}
+        {% endif %}
 
         <button type="submit" name="login">Log in</button>
     </form>
-    <br><br>
-    <a name="login42" href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fplayer%2Fauth%2F42%2Fcallback%2F&response_type=code">Log in with 42</a>
-    {% endblock %}
+
+    <br>
+    <a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fplayer%2Fauth%2F42%2Fcallback%2F&response_type=code">Log in with 42</a>
+
+    <script>
+        let rawUsername = "";
+
+        document.getElementById("username").addEventListener("input", function() {
+            var usernameInput = document.getElementById("username");
+            rawUsername = usernameInput.value;
+        });
+
+        document.querySelector("form").addEventListener("submit", function(e) {
+            var usernameInput = document.getElementById("username");
+            if (rawUsername) {
+                usernameInput.value = "_" + rawUsername;
+            }
+        });
+    </script>
+{% endblock %}
