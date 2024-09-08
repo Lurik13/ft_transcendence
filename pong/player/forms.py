@@ -57,8 +57,3 @@ class RegisterForm(UserCreationForm):
             user.save()
         return user
 
-
-class PhoneForm(forms.ModelForm):
-    class Meta:
-        model = Player
-        fields = ['phone_number']

@@ -18,6 +18,7 @@ def create_otp_code(request):
 
 
 def send_otp(request, totp, contact, method):
+    #totp = request
     otp = totp.now()
     print(f"Your one time password is {otp}")
     print("----------------------------------")

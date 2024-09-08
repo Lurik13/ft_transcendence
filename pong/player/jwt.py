@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from .models import BlacklistedToken, Player
 from django.http import JsonResponse
+from django.shortcuts import redirect
 
 User = get_user_model()
 
@@ -31,6 +32,30 @@ def decode_jwt(token):
         return {'error': 'Token is invalid'}
     except Player.DoesNotExist:
         return {'error': 'User not found'}
+
+
+def token_user(request):
+    token = request.COOKIES.get('jwt')
+    if not token:
+        JsonResponse({'valid': False, 'message': 'No token found'}, status=401)
+        return redirect('/player/login/')
+    user = decode_jwt(token)
+    if not user:
+        print("NO USER")
+        JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)
+        return redirect('/player/login/')
+    print(user)
+    return user
+
+
+def set_jwt_token(response, token):
+    response.set_cookie(
+        'jwt',
+        token,
+        httponly=True,  # Prevent JavaScript access to the cookie
+        secure=True,  # Use Secure flag to ensure it's only sent over HTTPS
+        samesite='Lax'  # Prevent CSRF attacks
+    )
 
 
 def verify_jwt(request):
