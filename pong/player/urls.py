@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from . import jwt
-
+from django.contrib.auth import views as auth_views
 app_name = "player"
 
 urlpatterns = [
@@ -15,5 +15,6 @@ urlpatterns = [
     path('verify-jwt/', jwt.verify_jwt, name='verify_jwt'),
     #path('toggle_2fa/', views.toggle_2fa, name='toggle_2fa'),
     path('update/', views.update, name='update'),
-    path('update/password', views.update_password, name='update_password'),
+    #path('update/password', views.update_password, name='update_password'),
+    path('password', auth_views.PasswordChangeView.as_view(success_url='account'), name='update_password'),
 ]

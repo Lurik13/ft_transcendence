@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import ContentFile
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
@@ -11,8 +12,9 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from .otp import send_otp, create_otp_code
 from .jwt import generate_jwt, decode_jwt, token_user, set_jwt_token
-from .forms import RegisterForm, ChangePasswordForm, UpdateForm
+from .forms import RegisterForm,  UpdateForm, ChangePasswordForm
 from .models import Player, BlacklistedToken
+from django.urls import reverse_lazy
 import os
 import pyotp
 import requests
@@ -301,13 +303,3 @@ def update(request):
     else:
         form = UpdateForm(instance=user)
     return render(request, 'player/update.html', {'form': form})
-
-
-def update_password(request):
-    user = token_user(request)
-
-    if request.method == 'POST':
-        return render(request, 'player/account.html', {'user': user})
-    else:
-        form = ChangePasswordForm(user)
-        return render(request, 'player/update_password.html', {"form": form})

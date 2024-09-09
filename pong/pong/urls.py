@@ -28,7 +28,6 @@ urlpatterns = [
     path('friend/', include('friend.urls')),
     path('player/', include('player.urls')),
     path('game/', include('game.urls')),
-
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
