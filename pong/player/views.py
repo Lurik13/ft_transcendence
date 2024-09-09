@@ -269,7 +269,6 @@ def auth_42_callback(request):
 
 def account_view(request):
     user = token_user(request)
-
     if request.method == 'POST':
         email_2fa_active = 'email_2fa_active' in request.POST
         sms_2fa_active = 'sms_2fa_active' in request.POST
@@ -295,10 +294,10 @@ def update(request):
     user = token_user(request)
 
     if request.method == 'POST':
-        form = UpdateForm(request.POST, instance=user)
+        form = UpdateForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
-        return render(request, 'player/account.html', {'user': user})
+        return redirect('/player/account/')
     else:
         form = UpdateForm(instance=user)
     return render(request, 'player/update.html', {'form': form})
