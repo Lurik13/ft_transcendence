@@ -9,7 +9,7 @@ def upload_to_profile_pictures(instance, filename):
     return os.path.join('profile_pictures', instance.username, filename)
 
 class Player(AbstractUser):
-    profile_picture = models.ImageField(upload_to=upload_to_profile_pictures, blank=True, null=True, default="fallback.jpg")
+    profile_picture = models.ImageField(upload_to=upload_to_profile_pictures, blank=True, null=True, default="profile_pictures/fallback.png")
     rank = models.IntegerField(default=1000)
     phone_number = PhoneNumberField(blank=True, null=True)
 
