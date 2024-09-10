@@ -154,7 +154,8 @@ LOGIN_URL = "player/login/"
 # 42 API
 FT42_CLIENT_ID = get_secret('FT42_client_id')
 FT42_CLIENT_SECRET = get_secret('FT42_client_secret')
-FT42_REDIRECT_URI = 'http://localhost:8000/player/auth/42/callback/'
+FT42_REDIRECT_URI = get_secret('FT42_redirect_uri')
+FT42_OAUTH_URL = get_secret('FT42_0auth_url')
 
 # Vonage API
 VONAGE_API_KEY = get_secret('vonage_api_key')

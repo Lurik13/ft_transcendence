@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.views import PasswordChangeView
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import ContentFile
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
@@ -12,9 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from .otp import send_otp, create_otp_code
 from .jwt import generate_jwt, decode_jwt, token_user, set_jwt_token
-from .forms import RegisterForm,  UpdateForm, ChangePasswordForm
+from .forms import RegisterForm, ChangePasswordForm, UpdateForm
 from .models import Player, BlacklistedToken
-from django.urls import reverse_lazy
 import os
 import pyotp
 import requests
@@ -90,10 +88,21 @@ def login_view(request):
                 response = redirect('/player/tfa/', {"user": user})
                 return response
 
+        elif '42_login' in request.POST:
+            oauth_url = f"{settings.FT42_OAUTH_URL}?client_id={settings.FT42_CLIENT_ID}&redirect_uri={settings.FT42_REDIRECT_URI}&response_type=code"
+            return redirect(oauth_url)
+
     else:
         form = AuthenticationForm()
 
     return render(request, 'player/login.html', {"form": form })
+
+
+
+def login_42_view(request):
+    oauth_url = f"{settings.FT42_OAUTH_URL}?client_id={settings.FT42_CLIENT_ID}&redirect_uri={settings.FT42_REDIRECT_URI}&response_type=code"
+    
+    return render(request, 'login_42.html', {'oauth_url': oauth_url})
 
 
 def tfa_view(request):
@@ -208,13 +217,11 @@ def auth_42_callback(request):
 
     response = requests.post(token_url, data=data)
     if response.status_code != 200: #if the HTTP request (get) is not successful 
-        print("STATUS 200")
         return redirect('/player/login/')
 
     token_info = response.json()
     access_token = token_info.get('access_token')
     if not access_token:
-        print("NOT ACCESS TOKEN !")
         return redirect('/player/login/')
 
     user_info_response = requests.get(
@@ -282,6 +289,34 @@ def account_view(request):
     return render(request, 'player/account.html', {'user': user})
 
 
+def update(request):
+    user = token_user(request)
+
+    if request.method == 'POST':
+        form = UpdateForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('/player/account/')
+    else:
+        form = UpdateForm(instance=user)
+    return render(request, 'player/update.html', {'form': form})
+
+
+def update_password(request):
+    user = token_user(request)
+
+    if request.method == 'POST':
+        form = ChangePasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/player/account/')
+        else:
+            return render(request, 'player/update_password.html', {"form": form})
+    else:
+        form = ChangePasswordForm(user)
+        return render(request, 'player/update_password.html', {"form": form})
+
+
 def logout_view(request):
     token = request.COOKIES.get('jwt')
     response = redirect('/player/login/')
@@ -292,14 +327,6 @@ def logout_view(request):
     return response
 
 
-def update(request):
+def delete_account(request):
     user = token_user(request)
-
-    if request.method == 'POST':
-        form = UpdateForm(request.POST, request.FILES, instance=user)
-        if form.is_valid():
-            form.save()
-        return redirect('/player/account/')
-    else:
-        form = UpdateForm(instance=user)
-    return render(request, 'player/update.html', {'form': form})
+    return render(request, 'player/delete_account.html')

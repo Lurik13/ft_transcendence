@@ -9,7 +9,7 @@
     <h1>Player Login</h1>
     <br>
 
-    <form class="form-width-validation" action="/player/login/" method="post">
+    <form class="form-width-validation" method="post">
         {% csrf_token %}
         <div class="form-group">
             <label for="username">Username</label>
@@ -29,6 +29,11 @@
         <p style="color: red;">{{ error }}</p>
     {% endif %}
     <br>
+    <!-- 
     <a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-16025b9787666ade4d4f1d6dea5934752712328ed62f01905c7627b9d195d996&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fplayer%2Fauth%2F42%2Fcallback%2F&response_type=code">Log in with 42</a>
-
-{% endblock %}
+    -->
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="42_login">Log in with 42</button>
+    </form>
+    {% endblock %}

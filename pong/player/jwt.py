@@ -44,7 +44,7 @@ def token_user(request):
         print("NO USER")
         JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)
         return redirect('/player/login/')
-    print(user)
+    print(f"(token_user) {user}")
     return user
 
 
@@ -65,7 +65,7 @@ def verify_jwt(request):
     
     user = decode_jwt(token)
     if user:
-        print(f"user: {user}")
+        print(f"(verify_jwt)user: {user}")
         return JsonResponse({'valid': True, 'message': 'Token is valid'})
     else:
         return JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)
