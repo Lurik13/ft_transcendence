@@ -48,33 +48,36 @@ def register_view(request):
 
 def login_view(request):
     if request.method == "POST":
-        post_data = username_underscore(request)
-        form = AuthenticationForm(data=post_data)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
+        if 'login' in request.POST:
+            post_data = username_underscore(request)
+            form = AuthenticationForm(data=post_data)
+            if form.is_valid():
+                user = form.get_user()
+                login(request, user)
 
-            if user is not None:
-                user = get_object_or_404(Player, username=user.username)
+                if user is not None:
+                    user = get_object_or_404(Player, username=user.username)
 
-                if not user.email_2fa_active and not user.sms_2fa_active:
-                    token = generate_jwt(user)
-                    user = decode_jwt(token)
-                    print(user)
+                    if not user.email_2fa_active and not user.sms_2fa_active:
+                        token = generate_jwt(user)
+                        user = decode_jwt(token)
+                        print(user)
+                        
+                        if not user.nickname:
+                            user.nickname = user.username[1:]
+                            user.save()
+
+                        response = HttpResponse(status=302)  # 302 redirect to another page
+                        response = redirect('/player/account/')
+                        set_jwt_token(response, token)
+
+                        return response
                     
-                    if not user.nickname:
-                        user.nickname = user.username[1:]
-                        user.save()
-
                     response = HttpResponse(status=302)  # 302 redirect to another page
-                    response = redirect('/player/account/')
-                    set_jwt_token(response, token)
-
+                    response = redirect('/player/tfa/', {"user": user})
                     return response
-                
-                response = HttpResponse(status=302)  # 302 redirect to another page
-                response = redirect('/player/tfa/', {"user": user})
-                return response
+            else:
+                return render(request, 'player/login.html', {'error': 'Invalid username or password'})
 
         elif '42_login' in request.POST:
             oauth_url = f"{settings.FT42_OAUTH_URL}?client_id={settings.FT42_CLIENT_ID}&redirect_uri={settings.FT42_REDIRECT_URI}&response_type=code"
@@ -198,12 +201,11 @@ def auth_42_callback(request):
         response = redirect('/player/account/')
         set_jwt_token(response, token)
         user = token_user(request)
-        login(request, user)
+        #login(request, user)
         return response
 
     return redirect('/player/account/')
 
-@login_required
 def account_view(request):
     user = token_user(request)
     if request.method == 'POST':
@@ -216,7 +218,6 @@ def account_view(request):
         user.save()
     return render(request, 'player/account.html', {'user': user})
 
-@login_required
 def update_view(request):
     user = token_user(request)
 
@@ -229,7 +230,6 @@ def update_view(request):
         form = UpdateForm(instance=user)
     return render(request, 'player/update.html', {'form': form})
 
-@login_required
 def update_password_view(request):
     user = token_user(request)
 
@@ -244,7 +244,6 @@ def update_password_view(request):
         form = ChangePasswordForm(user)
         return render(request, 'player/update_password.html', {"form": form})
 
-@login_required
 def logout_view(request):
     token = request.COOKIES.get('jwt')
     response = redirect('/player/login/')
@@ -254,7 +253,6 @@ def logout_view(request):
     logout(request)
     return response
 
-@login_required
 def delete_account_view(request):
     user = token_user(request)
     return render(request, 'player/delete_account.html')

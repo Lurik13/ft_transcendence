@@ -1,10 +1,11 @@
-import jwt
-import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from .models import BlacklistedToken, Player
+from django.contrib.auth import login, authenticate, logout
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from .models import BlacklistedToken, Player
+import jwt
+import datetime
 
 User = get_user_model()
 
@@ -27,13 +28,10 @@ def decode_jwt(token):
         user = Player.objects.get(id=payload['user_id'])
         return user
     except jwt.ExpiredSignatureError:
-        logout(request)
         return {'error': 'Token has expired'}
     except jwt.DecodeError:
-        logout(request)
         return {'error': 'Token is invalid'}
     except Player.DoesNotExist:
-        logout(request)
         return {'error': 'User not found'}
 
 
@@ -44,7 +42,6 @@ def token_user(request):
         return redirect('/player/login/')
     user = decode_jwt(token)
     if not user:
-        print("NO USER")
         JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)
         return redirect('/player/login/')
     print(f"(token_user) {user}")
@@ -64,7 +61,6 @@ def set_jwt_token(response, token):
 def verify_jwt(request):
     token = request.COOKIES.get('jwt')
     if not token:
-        logout(request)
         return JsonResponse({'valid': False, 'message': 'No token found'}, status=401)
     
     user = decode_jwt(token)
@@ -72,5 +68,4 @@ def verify_jwt(request):
         print(f"(verify_jwt)user: {user}")
         return JsonResponse({'valid': True, 'message': 'Token is valid'})
     else:
-        logout(request)
         return JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)

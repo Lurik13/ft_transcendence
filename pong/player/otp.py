@@ -12,13 +12,13 @@ def send_otp(request, totp, contact, method):
     print("----------------------------------")
     print(f"Your one time password is {otp}")
     print("----------------------------------")
-    
+
     if method == 'sms':
         client = vonage.Client(key=settings.VONAGE_API_KEY, secret=settings.VONAGE_SECRET_KEY)
         sms = vonage.Sms(client)
         responseData = sms.send_message(
         {
-            "from": "Vonage APIs",
+            "from": "PONG WARS",
             "to": contact,
             "text": f"Your one time password is {otp}\n",
         })
