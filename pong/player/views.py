@@ -2,22 +2,25 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import ContentFile
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.middleware.csrf import get_token
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, timedelta
 from .otp import send_otp, create_otp_code
 from .jwt import generate_jwt, decode_jwt, token_user, set_jwt_token
 from .forms import RegisterForm, ChangePasswordForm, UpdateForm
 from .models import Player, BlacklistedToken
+from .utils import set_picture_42, username_underscore, verify_user
+from datetime import datetime, timedelta
 import os
 import pyotp
 import requests
 import jwt
 import json
+import logging
 
 
 def register_view(request):
@@ -31,27 +34,16 @@ def register_view(request):
                 login(request, user)
                 user.nickname = user.username[1:]
                 user.save()
+
                 token = generate_jwt(user)
                 response = HttpResponse(status=302)  # 302 redirect to another page
                 response = redirect('/player/account/')
                 set_jwt_token(response, token)
 
-                print("JWT cookie set:", response.cookies['jwt'].value) 
-                print("----------------------------------")
-
                 return response
-
     else:
         form = RegisterForm()
     return render(request, 'player/register.html', {'form': form})
-
-
-def username_underscore(request):
-    post_data = request.POST.copy()
-    raw_username = post_data.get('username')
-    if raw_username:
-        post_data['username'] = f"_{raw_username}"
-    return post_data
 
 
 def login_view(request):
@@ -64,7 +56,6 @@ def login_view(request):
 
             if user is not None:
                 user = get_object_or_404(Player, username=user.username)
-                print(f"phone: {user.phone_number}")
 
                 if not user.email_2fa_active and not user.sms_2fa_active:
                     token = generate_jwt(user)
@@ -78,9 +69,6 @@ def login_view(request):
                     response = HttpResponse(status=302)  # 302 redirect to another page
                     response = redirect('/player/account/')
                     set_jwt_token(response, token)
-
-                    print("JWT cookie set:", response.cookies['jwt'].value)
-                    print("----------------------------------")
 
                     return response
                 
@@ -97,41 +85,19 @@ def login_view(request):
 
     return render(request, 'player/login.html', {"form": form })
 
-
-
-def login_42_view(request):
-    oauth_url = f"{settings.FT42_OAUTH_URL}?client_id={settings.FT42_CLIENT_ID}&redirect_uri={settings.FT42_REDIRECT_URI}&response_type=code"
-    
-    return render(request, 'login_42.html', {'oauth_url': oauth_url})
-
-
+@login_required
 def tfa_view(request):
     ########################### Here I use the user from request and call its Player object. I apply the JWT token only when the 2FA/OTP is valid
-    if not request.user.is_authenticated:
-        return redirect('/player/login/')
-    try:
-        user = get_object_or_404(Player, username=request.user.username)
-    except Player.DoesNotExist:
-        return redirect('/player/login/')
-
-    print(f"username: {user.username}")
-    print(f"phone_number: {user.phone_number}")
+    user = verify_user(request)
     ###########################
 
     if request.method == "POST":
-        print(f"POST data: {request.POST}")
-
         if 'tfa' in request.POST:
-
             totp = pyotp.TOTP(pyotp.random_base32(), interval=60)
                 
             request.session['username'] = user.username
             request.session['otp_secret_key'] = totp.secret
             request.session['otp_valid_date'] = (datetime.now() + timedelta(minutes=1)).isoformat()
-            
-            print(f"request.session['username']: {request.session['username']}")
-            print(f"request.session['otp_secret_key']: {request.session['otp_secret_key']}")
-            print(f"request.session['otp_valid_date']: {request.session['otp_valid_date']}")
                 
             otp_method = request.POST.get('otp_method')
             if  otp_method == 'sms':
@@ -147,31 +113,17 @@ def tfa_view(request):
 
     return render(request, 'player/tfa.html', {'user': user})
 
-
+@login_required
 def otp_view(request):
     ########################### Here I use the user from request and call its Player object. I apply the JWT token only when the 2FA/OTP is valid
-    if not request.user.is_authenticated:
-        return redirect('/player/login/')
-    try:
-        user = get_object_or_404(Player, username=request.user.username)
-    except Player.DoesNotExist:
-        return redirect('/player/login/')
-
-    print(f"username: {user.username}")
-    print(f"phone_number: {user.phone_number}")
+    user = verify_user(request)
     ###########################
 
     if request.method == "POST":
-        print(f"POST data: {request.POST}")
         if 'otp' in request.POST:
-        
             user_otp = request.POST.get('otp')
             otp_secret_key = request.session.get('otp_secret_key')
             otp_valid_date = request.session.get('otp_valid_date')
-
-            print(f"user_otp: {user_otp}" )
-            print(f"otp_secret_key: {otp_secret_key}")
-            print(f"otp_valid_date: {otp_valid_date}")
 
             if otp_secret_key and otp_valid_date:
                 valid_until = datetime.fromisoformat(otp_valid_date)
@@ -208,13 +160,6 @@ def auth_42_callback(request):
         'redirect_uri': settings.FT42_REDIRECT_URI,
     }
 
-    print('############################')
-    print('client_id : ' + settings.FT42_CLIENT_ID)
-    print('client_secret : ' + settings.FT42_CLIENT_SECRET)
-    print('code : ' + code)
-    print('redirect_uri : ' + settings.FT42_REDIRECT_URI)
-    print('token_url : ' + token_url)
-
     response = requests.post(token_url, data=data)
     if response.status_code != 200: #if the HTTP request (get) is not successful 
         return redirect('/player/login/')
@@ -232,16 +177,10 @@ def auth_42_callback(request):
         return redirect('/player/login/')
 
     user_info = user_info_response.json()
-    login = user_info.get('login')
-    username = f'{login}'
+    login_name = user_info.get('login')
+    username = f'{login_name}'
     email = user_info.get('email')
     profile_picture = user_info["image"]["versions"]["small"]
-
-    print('\n')
-    print('login : ' + user_info.get('login'))
-    print('email : ' + user_info.get('email'))
-    print('last_name : ' + user_info.get('last_name'))
-    print('############################')
 
     if not username:
         return redirect('/player/login/')
@@ -256,26 +195,17 @@ def auth_42_callback(request):
         user.nickname = user.username
         user.save()
         if profile_picture: 
-            response = requests.get(profile_picture)
-            if response.status_code == 200: #if the HTTP request (get) is successful 
-                picture_name = f"{user.username}_profile.jpg"
-                profile_pic_dir = os.path.join(settings.MEDIA_ROOT, "profile_pictures", user.username)
-
-                if not os.path.exists(profile_pic_dir):
-                    os.makedirs(profile_pic_dir)
-                    user.profile_picture.save(picture_name, ContentFile(response.content), save=True)
-            else:
-                print(f"Failed to fetch profile picture, status code: {response.status_code}")
-        
+            set_picture_42(request, user, profile_picture)
         token = generate_jwt(user)
         response = redirect('/player/account/')
         set_jwt_token(response, token)
         user = token_user(request)
-        
+        login(request, user)
         return response
 
     return redirect('/player/account/')
 
+@login_required
 def account_view(request):
     user = token_user(request)
     if request.method == 'POST':
@@ -288,8 +218,8 @@ def account_view(request):
         user.save()
     return render(request, 'player/account.html', {'user': user})
 
-
-def update(request):
+@login_required
+def update_view(request):
     user = token_user(request)
 
     if request.method == 'POST':
@@ -301,8 +231,8 @@ def update(request):
         form = UpdateForm(instance=user)
     return render(request, 'player/update.html', {'form': form})
 
-
-def update_password(request):
+@login_required
+def update_password_view(request):
     user = token_user(request)
 
     if request.method == 'POST':
@@ -316,7 +246,7 @@ def update_password(request):
         form = ChangePasswordForm(user)
         return render(request, 'player/update_password.html', {"form": form})
 
-
+@login_required
 def logout_view(request):
     token = request.COOKIES.get('jwt')
     response = redirect('/player/login/')
@@ -326,7 +256,7 @@ def logout_view(request):
     logout(request)
     return response
 
-
-def delete_account(request):
+@login_required
+def delete_account_view(request):
     user = token_user(request)
     return render(request, 'player/delete_account.html')

@@ -13,7 +13,7 @@ urlpatterns = [
     path('auth/42/callback/', views.auth_42_callback, name='auth_42_callback'),
     path('logout/', views.logout_view, name='logout'),
     path('verify-jwt/', jwt.verify_jwt, name='verify_jwt'),
-    path('update/', views.update, name='update'),
-    path('update_password/', views.update_password, name='update_password'),
-    path('delete_account/', views.delete_account, name='delete_account'),
+    path('update/', views.update_view, name='update'),
+    path('update_password/', views.update_password_view, name='update_password'),
+    path('delete_account/', views.delete_account_view, name='delete_account'),
 ]

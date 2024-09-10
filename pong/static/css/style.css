@@ -94,10 +94,7 @@ form .container-form p {
   color: rgba(240, 248, 255, 0.4);
   z-index: -1;
 }
-form a {
-  display: block;
-  text-align: left;
-}
+
 
 .home-header {
   display: flex;

@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 def homepage(request):
-    return render(request, 'home.html')
+    return redirect('player/login/')
 
 def about(request):
     return render(request, 'about.html')
