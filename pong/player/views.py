@@ -9,7 +9,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.middleware.csrf import get_token
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from .otp import send_otp, create_otp_code
+from .otp import send_otp
 from .jwt import generate_jwt, decode_jwt, token_user, set_jwt_token
 from .forms import RegisterForm, ChangePasswordForm, UpdateForm
 from .models import Player, BlacklistedToken
@@ -102,11 +102,9 @@ def tfa_view(request):
             otp_method = request.POST.get('otp_method')
             if  otp_method == 'sms':
                 contact = str(user.phone_number)
-                print("contact: " + contact)
                 send_otp(request, totp, contact, method='sms')
             elif otp_method == 'email':
                 contact = user.email
-                print("contact: " + contact)
                 send_otp(request, totp, contact, method='email')
             
             return redirect('/player/otp/')

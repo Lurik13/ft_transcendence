@@ -6,22 +6,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from django.conf import settings
 
-##
-def create_otp_code(request):
-    totp = pyotp.TOTP(pyotp.random_base32(), interval=120)
-    otp_url = totp.provisioning_uri(request.user.email, issuer_name="pong")
-    request.session['otp_secret_key'] = totp.secret
-    valid_date = datetime.now() + timedelta(minutes=2)
-    request.session['otp_valid_date'] = str(valid_date)
-
-##
-
 
 def send_otp(request, totp, contact, method):
-    #totp = request
     otp = totp.now()
+    print("----------------------------------")
     print(f"Your one time password is {otp}")
     print("----------------------------------")
+    
     if method == 'sms':
         client = vonage.Client(key=settings.VONAGE_API_KEY, secret=settings.VONAGE_SECRET_KEY)
         sms = vonage.Sms(client)
@@ -37,26 +28,19 @@ def send_otp(request, totp, contact, method):
             print(f"Message failed with error: {responseData['messages'][0]['error-text']}")
 
     elif method == 'email':
-        # Email details
-        sender_email = settings.SMTP_USERNAME
-        receiver_email = contact
-        subject = "PONG Verification Code"
-        body = f"Your Verification code is : {otp}"
-
-        # SMTP Server Configuration
+        # SMTP Server Configuration and Email details
         smtp_server = settings.SMTP_SERVER
         smtp_port = settings.SMTP_PORT
         smtp_username = settings.SMTP_USERNAME
         smtp_password = settings.SMTP_PASSWORD
-
-        print(f"smtp_server: {smtp_server}")
-        print(f"smtp_port: {smtp_port}")
-        print(f"smtp_username: {smtp_username}")
-        print(f"smtp_password: {smtp_password}")
+        
+        receiver_email = contact
+        subject = "PONG Verification Code"
+        body = f"Your Verification code is : {otp}"
 
         # Create the email
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = smtp_username
         msg['To'] = receiver_email
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
@@ -65,7 +49,7 @@ def send_otp(request, totp, contact, method):
         try:
             with smtplib.SMTP(smtp_server, smtp_port) as server:
                 server.login(smtp_username, smtp_password)
-                server.sendmail(sender_email, receiver_email, msg.as_string())
+                server.sendmail(smtp_username, receiver_email, msg.as_string())
                 print("Email sent successfully.")
         except Exception as e:
             print(f"Failed to send email: {e}")

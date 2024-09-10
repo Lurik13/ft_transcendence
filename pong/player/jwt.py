@@ -27,10 +27,13 @@ def decode_jwt(token):
         user = Player.objects.get(id=payload['user_id'])
         return user
     except jwt.ExpiredSignatureError:
+        logout(request)
         return {'error': 'Token has expired'}
     except jwt.DecodeError:
+        logout(request)
         return {'error': 'Token is invalid'}
     except Player.DoesNotExist:
+        logout(request)
         return {'error': 'User not found'}
 
 
@@ -61,6 +64,7 @@ def set_jwt_token(response, token):
 def verify_jwt(request):
     token = request.COOKIES.get('jwt')
     if not token:
+        logout(request)
         return JsonResponse({'valid': False, 'message': 'No token found'}, status=401)
     
     user = decode_jwt(token)
@@ -68,4 +72,5 @@ def verify_jwt(request):
         print(f"(verify_jwt)user: {user}")
         return JsonResponse({'valid': True, 'message': 'Token is valid'})
     else:
+        logout(request)
         return JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)
