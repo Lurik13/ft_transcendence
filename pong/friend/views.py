@@ -1,16 +1,18 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Friendship
 from django.contrib import messages
 from django.db.models import Q
-from .models import Player
-
 from django.utils import timezone
-# Create your views here.
+from .models import Friendship, Player
+import logging
 
+
+@login_required
 def index(request):
     return render(request, "friend/index.html")
 
+@login_required
 def add(request):
     if request.method == 'POST':
         you = request.user
@@ -33,24 +35,28 @@ def add(request):
         # Handle the submitted username as needed
         # For example, you can query the User model or process it in other ways
     return render(request, "friend/add.html")
-    
+
+@login_required    
 def delete_friend(request, id_friendship):
     request = Friendship.objects.get(id=id_friendship)
     request.delete()
     return redirect("friend:list")
 
+@login_required
 def accept(request, id_friendship):
     request = Friendship.objects.get(id=id_friendship)
     request.status = 'accepted'
     request.save()
     return redirect("friend:pending")
 
+@login_required
 def refuse(request, id_friendship):
     request = Friendship.objects.get(id=id_friendship)
     request.status = 'refused'
     request.save()
     return redirect("friend:pending")
 
+@login_required
 def list(request):
     you = request.user
     friends = Friendship.objects.filter(Q(user=you, status='accepted') | Q(friend=you, status='accepted'))
@@ -58,6 +64,7 @@ def list(request):
     you.save()
     return render(request, "friend/list.html", {'friends':friends, 'you':you})
 
+@login_required
 def pending(request):
     you = request.user
     friends = Friendship.objects.filter(Q(friend=you, status='pending'))
@@ -65,6 +72,7 @@ def pending(request):
     you.save()
     return render(request, "friend/pending.html", {'friends':friends, 'you':you})
 
+@login_required
 def refused(request):
     you = request.user
     friends = Friendship.objects.filter(Q(friend=you, status='refused'))

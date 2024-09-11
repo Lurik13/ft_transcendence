@@ -1,10 +1,25 @@
-work<br>
+{% extends 'layout.html' %}
 
-{% for elem in n %}
+{% block title %}
+    Work
+{% endblock %}
+
+{% block content %}
+    <br>
+    work
+    <br>
+    {% for elem in friends %}
+
+        <p>{{elem.user.username}}
+        | 
+        <a href= "{% url 'friend:accept' elem.id %}">accept</a>
+    {% endfor %}
+    {% for elem in n %}
     {{elem}}
-
-{% endfor %}
-
-<br>
-
-{{friend}} | {{you}}
+    
+    {% endfor %}
+    
+    <br>
+    
+    {{friend}} | {{you}}
+{% endblock %}
