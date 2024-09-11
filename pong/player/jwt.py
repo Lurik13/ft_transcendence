@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login, authenticate, logout
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.urls import reverse
 from .models import BlacklistedToken, Player
 import jwt
 import datetime
@@ -37,13 +38,17 @@ def decode_jwt(token):
 
 def token_user(request):
     token = request.COOKIES.get('jwt')
+    print(token)
     if not token:
         JsonResponse({'valid': False, 'message': 'No token found'}, status=401)
-        return redirect('/player/login/')
+        print("No token")
+        return redirect(reverse('player:login'))
     user = decode_jwt(token)
     if not user:
+        print("No user")
         JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)
-        return redirect('/player/login/')
+        return redirect(reverse('player:login'))
+    print(user)
     print(f"(token_user) {user}")
     return user
 

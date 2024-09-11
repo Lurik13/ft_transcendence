@@ -8,6 +8,7 @@ from django.core.files.base import ContentFile
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.middleware.csrf import get_token
 from django.conf import settings
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from .otp import send_otp
 from .jwt import generate_jwt, decode_jwt, token_user, set_jwt_token
@@ -200,24 +201,29 @@ def auth_42_callback(request):
         token = generate_jwt(user)
         response = redirect('/player/account/')
         set_jwt_token(response, token)
+        login(request, user)
         user = token_user(request)
-        #login(request, user)
         return response
 
     return redirect('/player/account/')
 
+@login_required
 def account_view(request):
     user = token_user(request)
-    if request.method == 'POST':
-        email_2fa_active = 'email_2fa_active' in request.POST
-        sms_2fa_active = 'sms_2fa_active' in request.POST
+    if user:
+        if request.method == 'POST':
+            email_2fa_active = 'email_2fa_active' in request.POST
+            sms_2fa_active = 'sms_2fa_active' in request.POST
 
-        user.email_2fa_active = email_2fa_active
-        if user.phone_number:
-            user.sms_2fa_active = sms_2fa_active
-        user.save()
-    return render(request, 'player/account.html', {'user': user})
+            user.email_2fa_active = email_2fa_active
+            if user.phone_number:
+                user.sms_2fa_active = sms_2fa_active
+            user.save()
+        return render(request, 'player/account.html', {'user': user})
+    
+    return redirect(reverse('player:login'))
 
+@login_required
 def update_view(request):
     user = token_user(request)
 
@@ -230,6 +236,7 @@ def update_view(request):
         form = UpdateForm(instance=user)
     return render(request, 'player/update.html', {'form': form})
 
+@login_required
 def update_password_view(request):
     user = token_user(request)
 
@@ -237,6 +244,7 @@ def update_password_view(request):
         form = ChangePasswordForm(user, request.POST)
         if form.is_valid():
             form.save()
+            login(request, user)
             return redirect('/player/account/')
         else:
             return render(request, 'player/update_password.html', {"form": form})
@@ -244,6 +252,7 @@ def update_password_view(request):
         form = ChangePasswordForm(user)
         return render(request, 'player/update_password.html', {"form": form})
 
+@login_required
 def logout_view(request):
     token = request.COOKIES.get('jwt')
     response = redirect('/player/login/')
@@ -253,6 +262,7 @@ def logout_view(request):
     logout(request)
     return response
 
+@login_required
 def delete_account_view(request):
     user = token_user(request)
     return render(request, 'player/delete_account.html')

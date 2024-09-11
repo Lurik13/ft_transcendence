@@ -149,7 +149,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 
 #Custom user model
-LOGIN_URL = "player/login/"
+LOGIN_URL = "/player/login/"
+LOGIN_REDIRECT_URL = "/"
+
 
 # 42 API
 FT42_CLIENT_ID = get_secret('FT42_client_id')
