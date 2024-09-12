@@ -60,7 +60,6 @@ def set_jwt_token(response, token):
         samesite='Lax'  # Prevent CSRF attacks
     )
 
-
 def verify_jwt(request):
     token = request.COOKIES.get('jwt')
     if not token:

@@ -10,7 +10,7 @@ from django.middleware.csrf import get_token
 from django.conf import settings
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from .otp import send_otp
+from .otp import send_otp, create_otp
 from .jwt import generate_jwt, decode_jwt, token_user, set_jwt_token
 from .forms import RegisterForm, ChangePasswordForm, UpdateForm
 from .models import Player, BlacklistedToken
@@ -97,22 +97,8 @@ def tfa_view(request):
 
     if request.method == "POST":
         if 'tfa' in request.POST:
-            totp = pyotp.TOTP(pyotp.random_base32(), interval=60)
-                
-            request.session['username'] = user.username
-            request.session['otp_secret_key'] = totp.secret
-            request.session['otp_valid_date'] = (datetime.now() + timedelta(minutes=1)).isoformat()
-                
-            otp_method = request.POST.get('otp_method')
-            if  otp_method == 'sms':
-                contact = str(user.phone_number)
-                send_otp(request, totp, contact, method='sms')
-            elif otp_method == 'email':
-                contact = user.email
-                send_otp(request, totp, contact, method='email')
-            
+            create_otp(request, user)
             return redirect('/player/otp/')
-
     return render(request, 'player/tfa.html', {'user': user})
 
 @login_required
@@ -140,11 +126,16 @@ def otp_view(request):
                         del request.session['otp_secret_key']
                         del request.session['otp_valid_date']
                         del request.session['username']
+                        del request.session['otp_method']
 
                         return response
                 else:
                     return render(request, 'player/otp.html', {'error': 'OTP has expired'})
             return render(request, 'player/otp.html', {'error': 'Invalid OTP'})
+        
+        elif 'resend_otp' in request.POST:
+            create_otp(request, user)
+
     return render(request, 'player/otp.html')
 
 

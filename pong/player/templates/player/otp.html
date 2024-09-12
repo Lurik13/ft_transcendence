@@ -8,6 +8,10 @@
 <br>
     <h1>OTP</h1>
     <br>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
     <form  action="/player/otp/" method="POST">
         {% csrf_token %}
         <div>
@@ -17,9 +21,10 @@
         <br>
         <button type="submit">Confirm</button>
         <br>
-   
-        {% if error %}
-            <br><p style="color: red;">{{ error }}</p>
-        {% endif %}
     </form>
-    {% endblock %}
+    <br>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="resend_otp">Resend OTP</button>
+    </form>
+{% endblock %}
