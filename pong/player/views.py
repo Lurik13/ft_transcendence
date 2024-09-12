@@ -210,23 +210,24 @@ def auth_42_callback(request):
 @login_required
 def account_view(request):
     user = token_user(request)
-    if user:
-        if request.method == 'POST':
-            email_2fa_active = 'email_2fa_active' in request.POST
-            sms_2fa_active = 'sms_2fa_active' in request.POST
+    if user is None: 
+        return redirect(reverse('player:login'))
 
-            user.email_2fa_active = email_2fa_active
-            if user.phone_number:
-                user.sms_2fa_active = sms_2fa_active
-            user.save()
-        return render(request, 'player/account.html', {'user': user})
-    
-    return redirect(reverse('player:login'))
+    if request.method == 'POST':
+        email_2fa_active = 'email_2fa_active' in request.POST
+        sms_2fa_active = 'sms_2fa_active' in request.POST
+
+        user.email_2fa_active = email_2fa_active
+        if user.phone_number:
+            user.sms_2fa_active = sms_2fa_active
+        user.save()
+    return render(request, 'player/account.html', {'user': user})
 
 @login_required
 def update_view(request):
     user = token_user(request)
-
+    if user is None: 
+        return redirect(reverse('player:login'))
     if request.method == 'POST':
         form = UpdateForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
@@ -239,6 +240,8 @@ def update_view(request):
 @login_required
 def update_password_view(request):
     user = token_user(request)
+    if user is None: 
+        return redirect(reverse('player:login'))
 
     if request.method == 'POST':
         form = ChangePasswordForm(user, request.POST)
@@ -265,4 +268,6 @@ def logout_view(request):
 @login_required
 def delete_account_view(request):
     user = token_user(request)
+    if user is None: 
+        return redirect(reverse('player:login'))
     return render(request, 'player/delete_account.html')

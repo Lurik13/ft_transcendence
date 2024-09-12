@@ -19,7 +19,6 @@ def generate_jwt(user):
     token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return token
 
-
 def decode_jwt(token):
     if BlacklistedToken.objects.filter(token=token).exists():
         return {'error': 'Token is blacklisted'}
@@ -35,19 +34,18 @@ def decode_jwt(token):
     except Player.DoesNotExist:
         return {'error': 'User not found'}
 
-
 def token_user(request):
     token = request.COOKIES.get('jwt')
     print(token)
     if not token:
         JsonResponse({'valid': False, 'message': 'No token found'}, status=401)
         print("No token")
-        return redirect(reverse('player:login'))
+        return None
     user = decode_jwt(token)
-    if not user:
+    if user is None:
         print("No user")
         JsonResponse({'valid': False, 'message': 'Invalid or expired token'}, status=401)
-        return redirect(reverse('player:login'))
+        return None
     print(user)
     print(f"(token_user) {user}")
     return user
@@ -69,7 +67,7 @@ def verify_jwt(request):
         return JsonResponse({'valid': False, 'message': 'No token found'}, status=401)
     
     user = decode_jwt(token)
-    if user:
+    if user is not None:
         print(f"(verify_jwt)user: {user}")
         return JsonResponse({'valid': True, 'message': 'Token is valid'})
     else:
