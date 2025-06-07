@@ -35,7 +35,8 @@ services:
         container_name: nginx_server
         ports:
           - "8080:8080"
-          - "8443:8443"       
+          - "80:80"       
+          # - "8443:8443"       
         networks:
           - ft_transcendence
         build:

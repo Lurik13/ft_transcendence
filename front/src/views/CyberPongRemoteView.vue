@@ -176,7 +176,7 @@ body {
   function connectWebSocket()
   {
     console.log(lastSegment);
-    socket.value = new WebSocket(`wss://localhost:8443/ws/websockets/?page=${encodeURIComponent(gamePage)}`);
+    socket.value = new WebSocket(`wss://localhost:80/ws/websockets/?page=${encodeURIComponent(gamePage)}`);
     socket.value.onopen = () => {
       console.log('WebSocket connecté');
       console.log(socket.value);

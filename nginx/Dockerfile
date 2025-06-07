@@ -18,4 +18,4 @@ WORKDIR /etc/nginx/ssl
 RUN chmod 644 server.crt
 RUN chmod 600 server.key
 EXPOSE 8000
-EXPOSE 8443
+EXPOSE 80

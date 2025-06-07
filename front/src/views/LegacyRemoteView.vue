@@ -299,7 +299,7 @@ function updateBaal(x, y)
 
 function connectWebSocket() {
   let hostName =  window.location.hostname;
-  let port = window.location.port || '8443';
+  let port = window.location.port || '80';
   socket.value = new WebSocket(`wss://${hostName}:${port}/ws/websockets/?page=${encodeURIComponent(gamePage)}`);
   socket.value.onopen = () => {
     console.log('WebSocket connecté');
