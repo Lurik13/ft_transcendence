@@ -32,8 +32,8 @@ ALLOWED_HOSTS = [
                  "api",
                  "10.11.*.*",
                  "10.11.7.13",
-                 'lucasribette.com'
-                 '82.25.116.35'
+                 'lucasribette.com',
+                 '82.25.116.35',
                 ]
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
