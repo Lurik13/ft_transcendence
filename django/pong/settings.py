@@ -40,10 +40,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = None
 CSRF_TRUSTED_ORIGINS = ['https://localhost:8443',
                         'https://10.11.*.*:8443',
                         'https://10.11.7.13:8443',
-                        # 'https://82.25.116.35:8443',
-                        'https://82.25.116.35',
-                        'https://82.25.116.35:80',
-                        'https://lucasribette.com'
+                        'https://82.25.116.35:8443',
                         ]
 
 CSRF_COOKIE_HTTPONLY = False
@@ -58,10 +55,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://localhost:8443",
     'https://10.11.*.*:8443',
     'https://10.11.7.13:8443',
-    # 'https://82.25.116.35:8443',
-    'https://82.25.116.35',
-    'https://82.25.116.35:80',
-    'https://lucasribette.com'
+    'https://82.25.116.35:8443',
 ]
 
 
