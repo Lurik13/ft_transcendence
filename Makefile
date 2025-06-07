@@ -3,14 +3,14 @@ NAME = ft_transcendence
 all : ${NAME}
 
 ${NAME} :
-	docker compose up --build
+	docker-compose up --build
 
 clean :
-	docker compose down
+	docker-compose down
 	docker rmi $$(docker images -q)
 
 fclean :
-	docker compose down
+	docker-compose down
 	docker rmi $$(docker images -q)
 	docker volume rm $$(docker volume ls -q)
 	docker network rm $$(docker network ls -q)

@@ -40,7 +40,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = None
 CSRF_TRUSTED_ORIGINS = ['https://localhost:8443',
                         'https://10.11.*.*:8443',
                         'https://10.11.7.13:8443',
-                        'https://82.25.116.35:8443',
+                        # 'https://82.25.116.35:8443',
                         'https://82.25.116.35',
                         ]
 
@@ -56,7 +56,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://localhost:8443",
     'https://10.11.*.*:8443',
     'https://10.11.7.13:8443',
-    'https://82.25.116.35:8443',
+    # 'https://82.25.116.35:8443',
     'https://82.25.116.35',
 ]
 
